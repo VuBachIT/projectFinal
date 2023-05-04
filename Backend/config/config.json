@@ -1,0 +1,29 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "0838984298",
+    "database": "AppDB",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "0838984298",
+    "database": "AppDB",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "0838984298",
+    "database": "AppDB",
+    "host": "localhost",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  }
+}
