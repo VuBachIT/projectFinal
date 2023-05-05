@@ -5,7 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Category extends Model {
     static associate(models) {
-      Category.hasMany(models.Partner,{foreignKey : "categoryID"})
+      Category.hasMany(models.Partner,{foreignKey : 'categoryID'})
     }
   }
   Category.init({

@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {}
   }
   Admin.init({
-    account: DataTypes.STRING,
+    email: DataTypes.STRING,
     password: DataTypes.STRING,
     isDeleted : DataTypes.BOOLEAN
   }, {

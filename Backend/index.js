@@ -35,7 +35,7 @@ app.get('/data',(req,res)=>{
     // models.Game.create(data).then(res.send("Test Create"))
 })
 
-app.use('/promotion',require('./routes/promotionRoute'))
+app.use('/user',require('./routes/userRoute'))
 
 app.set('port', process.env.PORT || 3000);
 app.listen(app.get('port'), () => {

@@ -5,9 +5,9 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Voucher extends Model {
     static associate(models) {
-      Voucher.hasMany(models.Reward,{foreignKey : "voucherID"})
-      Voucher.belongsTo(models.Promotion,{foreignKey : "promotionID"})
-      Voucher.belongsTo(models.Game,{foreignKey : "gameID"})
+      Voucher.hasMany(models.Reward,{foreignKey : 'voucherID'})
+      Voucher.belongsTo(models.Promotion,{foreignKey : 'promotionID'})
+      Voucher.belongsTo(models.Game,{foreignKey : 'gameID'})
     }
   }
   Voucher.init({
