@@ -1,8 +1,11 @@
+require('dotenv').config()
+
 let express = require('express');
-let app = express();
 let bodyParser = require('body-parser')
 let Sequelize = require('sequelize')
+let app = express();
 
+app.use(express.json())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use((req, res, next) => {
