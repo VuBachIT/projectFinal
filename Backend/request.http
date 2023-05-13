@@ -1,14 +1,34 @@
-GET http://localhost:3000
+GET http://localhost:3000/partner/voucher
 
 ###
 
-POST http://localhost:3000/user/signup
+POST http://localhost:3000/partner/promotion
 Content-Type: application/json
 
 {
-    "email" : "test@gmail", 
+    "title" : "A", 
+    "description" : "A", 
+    "start" : "2023-05-13",
+    "end" : "2023-05-15",
+    "partnerID" : null,
+    "vouchers" : [
+        {
+            "id" : 1,
+            "quantity" : 30
+        },
+        {
+            "id" : 2,
+            "quantity" : 50
+        }
+    ]
+}
+
+###
+
+POST http://localhost:3000/user/signin
+Content-Type: application/json
+{
+    "email" : "customer@gmail.com", 
     "password" : "123", 
-    "address" : "123 Đường 1",
-    "phoneNumber" : "123321123321",
-    "name" : "VHB"
+    "role" : "customer",
 }

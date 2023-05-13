@@ -5,18 +5,14 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Voucher extends Model {
     static associate(models) {
-      Voucher.hasMany(models.Reward,{foreignKey : 'voucherID'})
-      Voucher.belongsTo(models.Promotion,{foreignKey : 'promotionID'})
-      Voucher.belongsTo(models.Game,{foreignKey : 'gameID'})
+      Voucher.hasMany(models.Activity,{foreignKey : 'voucherID'})
+      Voucher.hasMany(models.Detail,{foreignKey : 'voucherID'})
     }
   }
   Voucher.init({
     title: DataTypes.STRING,
     description: DataTypes.STRING,
     value: DataTypes.FLOAT,
-    quantity: DataTypes.INTEGER,
-    expDate: DataTypes.DATEONLY,
-    isUsed : DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Voucher',

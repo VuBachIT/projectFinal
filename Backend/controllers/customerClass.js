@@ -13,7 +13,6 @@ class Customer{
     }
 
     insertData(data){
-        console.log(data)
         return new Promise((resolve,reject)=>{
             customer.create(data)
             .then(resolve(true))

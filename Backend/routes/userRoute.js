@@ -3,15 +3,15 @@ let router = express.Router();
 let Sequelize = require('sequelize')
 let jwt = require('jsonwebtoken')
 let Op = Sequelize.Op
-let Customer = require('../controllers/customerClass');
-let Admin = require('../controllers/adminClass');
-let Partner = require('../controllers/partnerClass');
+let Customer = require('../controllers/customerClass')
+let Admin = require('../controllers/adminClass')
+let Partner = require('../controllers/partnerClass')
 let customer = new Customer()
 let admin = new Admin()
 let partner = new Partner()
 
 router.get('/', (req, res, next) => {
-    res.send("Test")
+    res.send("User Route")
 })
 
 router.post('/signin', (req, res, next) => {
@@ -21,7 +21,8 @@ router.post('/signin', (req, res, next) => {
             where: {
                 [Op.and]: [
                     { email: body.email },
-                    { password: body.password }
+                    { password: body.password },
+                    { isDeleted : false }
                 ]
             }
         }).then(data => {
@@ -29,11 +30,16 @@ router.post('/signin', (req, res, next) => {
                 data.role = body.role
                 const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
                 res.json({
+                    success : true,
+                    message : null,
                     token : token,
                     data : data
                 })
             } else {
-                res.sendStatus(401)
+                res.status(401).json({
+                    success : false,
+                    message : "Sai email hoặc mật khẩu"
+                })
             }
         }).catch(error => next(error))
     } else if (body.role == 'partner') {
@@ -41,7 +47,8 @@ router.post('/signin', (req, res, next) => {
             where: {
                 [Op.and]: [
                     { email: body.email },
-                    { password: body.password }
+                    { password: body.password },
+                    { isDeleted : false }
                 ]
             }
         }).then(data => {
@@ -49,11 +56,16 @@ router.post('/signin', (req, res, next) => {
                 data.role = body.role
                 const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
                 res.json({
+                    success : true,
+                    message : null,
                     token : token,
                     data : data
                 })
             } else {
-                res.sendStatus(401)
+               res.status(401).json({
+                    success : false,
+                    message : "Sai email hoặc mật khẩu"
+                })
             }
         }).catch(error => next(error))
     } else {
@@ -61,7 +73,8 @@ router.post('/signin', (req, res, next) => {
             where: {
                 [Op.and]: [
                     { email: body.email },
-                    { password: body.password }
+                    { password: body.password },
+                    { isDeleted : false }
                 ]
             }
         }).then(data => {
@@ -69,11 +82,16 @@ router.post('/signin', (req, res, next) => {
                 data.role = body.role
                 const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
                 res.json({
+                    success : true,
+                    message : null,
                     token : token,
                     data : data
                 })
             } else {
-                res.sendStatus(401)
+                res.status(401).json({
+                    success : false,
+                    message : "Sai email hoặc mật khẩu"
+                })
             }
         }).catch(error => next(error))
     }
@@ -84,14 +102,17 @@ router.post('/signup', (req, res, next) => {
     customer.getOne({where: { email: body.email }})
     .then(data => {
         if (data){
-            res.sendStatus(406)
+            res.status(406).json({
+                success : false,
+                message : "Trùng email"
+            })
         }else{
             body.isDeleted = false
             body.createdAt = Sequelize.literal('NOW()')
             body.updatedAt = Sequelize.literal('NOW()')
             customer.insertData(body)
             .then(result =>{
-                if(result){res.json({success : true})}
+                if(result){res.json({success : true, message : null})}
             })
             .catch(error => next(error))
         }

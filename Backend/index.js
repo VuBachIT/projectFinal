@@ -39,6 +39,7 @@ app.get('/data',(req,res)=>{
 })
 
 app.use('/user',require('./routes/userRoute'))
+app.use('/partner',require('./routes/partnerRoute'))
 
 app.set('port', process.env.PORT || 3000);
 app.listen(app.get('port'), () => {
