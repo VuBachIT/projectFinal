@@ -1,26 +1,15 @@
-GET http://localhost:3000/partner/voucher
+GET http://localhost:3000/partner/promotion?id=1
+
 
 ###
 
-POST http://localhost:3000/partner/promotion
+POST http://localhost:3000/user/signin
 Content-Type: application/json
 
 {
-    "title" : "A", 
-    "description" : "A", 
-    "start" : "2023-05-13",
-    "end" : "2023-05-15",
-    "partnerID" : null,
-    "vouchers" : [
-        {
-            "id" : 1,
-            "quantity" : 30
-        },
-        {
-            "id" : 2,
-            "quantity" : 50
-        }
-    ]
+    "email" : "partner@gmail.com", 
+    "password" : "123", 
+    "role" : "partner"
 }
 
 ###

@@ -3,6 +3,7 @@ require('dotenv').config()
 let express = require('express');
 let bodyParser = require('body-parser')
 let Sequelize = require('sequelize')
+let verifyToken = require('./controllers/authMiddleware')
 let app = express();
 
 app.use(express.json())
