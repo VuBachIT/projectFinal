@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       Promotion.hasMany(models.Detail,{foreignKey : 'promotionID'})
       Promotion.belongsTo(models.Partner,{foreignKey : 'partnerID'})
       Promotion.belongsTo(models.Status,{foreignKey : 'statusID'})
+      Promotion.belongsTo(models.Game,{foreignKey : 'gameID'})
     }
   }
   Promotion.init({

@@ -10,8 +10,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Status.init({
     state: DataTypes.STRING,
-    description: DataTypes.STRING,
-    isAccepted : DataTypes.BOOLEAN
+    description: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Status',

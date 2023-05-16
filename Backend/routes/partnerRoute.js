@@ -82,8 +82,8 @@ router.get('/promotion', (req, res, next) => {
             })
             .then(promotions => {
                 promotions.forEach(parent => {
-                    let status = parent.Status.dataValues
-                    let game = parent.Game.dataValues
+                    let status = parent.Status.dataValues.state
+                    let game = parent.Game.dataValues.title
                     parent.Status = status
                     parent.Game = game
                 })
@@ -97,6 +97,8 @@ router.get('/promotion', (req, res, next) => {
                 })
             })
             .catch(error => next(error))
+    }else{
+        res.sendStatus(405)
     }
 })
 

@@ -25,6 +25,14 @@ class Promotion{
             .catch(error => reject(new Error(error)))
         })
     }
+
+    deleteData(data){
+        return new Promise((resolve,reject)=>{
+            promotion.update({isDeleted : true},{where:{id : data}})
+            .then(resolve(true))
+            .catch(error => reject(new Error(error)))
+        })
+    }
 }
 
 module.exports = Promotion

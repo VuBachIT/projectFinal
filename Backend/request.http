@@ -1,4 +1,4 @@
-GET http://localhost:3000/partner/promotion?id=1
+DELETE http://localhost:3000/admin/promotion?id=1
 
 
 ###
