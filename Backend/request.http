@@ -1,15 +1,28 @@
-DELETE http://localhost:3000/admin/promotion?id=1
+DELETE http://localhost:3000/partner/promotion?id=1
 
 
 ###
 
-POST http://localhost:3000/user/signin
+PUT http://localhost:3000/partner/promotion
 Content-Type: application/json
 
 {
-    "email" : "partner@gmail.com", 
-    "password" : "123", 
-    "role" : "partner"
+    "id" : 1,
+    "title" : "TestC",
+    "description" : "Test",
+    "start" : "2023-05-16",
+    "end" : "2023-05-20",
+    "gameID" : 1,
+    "vouchers" : [
+        {
+            "id" : 1,
+            "quantity" : 50
+        },
+        {
+            "id" : 2,
+            "quantity" : 100
+        }
+    ]
 }
 
 ###

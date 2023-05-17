@@ -11,6 +11,14 @@ class Partner{
             .catch(error =>{reject(new Error(error))})
         }) 
     }
+
+    deleteData(data,condition){
+        return new Promise((resolve, reject) => {
+            partner.update(data, condition)
+                .then(resolve(true))
+                .catch(error => reject(new Error(error)))
+        })
+    }
 }
 
 module.exports = Partner

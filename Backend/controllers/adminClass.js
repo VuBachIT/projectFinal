@@ -11,6 +11,14 @@ class Admin{
             .catch(error =>{reject(new Error(error))})
         }) 
     }
+
+    deleteData(data,condition){
+        return new Promise((resolve, reject) => {
+            admin.update(data, condition)
+                .then(resolve(true))
+                .catch(error => reject(new Error(error)))
+        })
+    }
 }
 
 module.exports = Admin

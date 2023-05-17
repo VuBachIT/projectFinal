@@ -22,7 +22,7 @@ router.post('/signin', (req, res, next) => {
                 [Op.and]: [
                     { email: body.email },
                     { password: body.password },
-                    { isDeleted : false }
+                    { isDeleted: false }
                 ]
             }
         }).then(data => {
@@ -30,15 +30,15 @@ router.post('/signin', (req, res, next) => {
                 data.role = body.role
                 const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
                 res.json({
-                    success : true,
-                    message : null,
-                    token : token,
-                    data : data
+                    success: true,
+                    message: null,
+                    token: token,
+                    data: data
                 })
             } else {
                 res.status(401).json({
-                    success : false,
-                    message : "Sai email hoặc mật khẩu"
+                    success: false,
+                    message: "Incorrect email or password"
                 })
             }
         }).catch(error => next(error))
@@ -48,7 +48,7 @@ router.post('/signin', (req, res, next) => {
                 [Op.and]: [
                     { email: body.email },
                     { password: body.password },
-                    { isDeleted : false }
+                    { isDeleted: false }
                 ]
             }
         }).then(data => {
@@ -56,15 +56,15 @@ router.post('/signin', (req, res, next) => {
                 data.role = body.role
                 const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
                 res.json({
-                    success : true,
-                    message : null,
-                    token : token,
-                    data : data
+                    success: true,
+                    message: null,
+                    token: token,
+                    data: data
                 })
             } else {
-               res.status(401).json({
-                    success : false,
-                    message : "Sai email hoặc mật khẩu"
+                res.status(401).json({
+                    success: false,
+                    message: "Incorrect email or password"
                 })
             }
         }).catch(error => next(error))
@@ -74,7 +74,7 @@ router.post('/signin', (req, res, next) => {
                 [Op.and]: [
                     { email: body.email },
                     { password: body.password },
-                    { isDeleted : false }
+                    { isDeleted: false }
                 ]
             }
         }).then(data => {
@@ -82,15 +82,15 @@ router.post('/signin', (req, res, next) => {
                 data.role = body.role
                 const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
                 res.json({
-                    success : true,
-                    message : null,
-                    token : token,
-                    data : data
+                    success: true,
+                    message: null,
+                    token: token,
+                    data: data
                 })
             } else {
                 res.status(401).json({
-                    success : false,
-                    message : "Sai email hoặc mật khẩu"
+                    success: false,
+                    message: "Incorrect email or password"
                 })
             }
         }).catch(error => next(error))
@@ -99,24 +99,29 @@ router.post('/signin', (req, res, next) => {
 
 router.post('/signup', (req, res, next) => {
     let body = req.body
-    customer.getOne({where: { email: body.email }})
-    .then(data => {
-        if (data){
-            res.status(406).json({
-                success : false,
-                message : "Trùng email"
-            })
-        }else{
-            body.isDeleted = false
-            body.createdAt = Sequelize.literal('NOW()')
-            body.updatedAt = Sequelize.literal('NOW()')
-            customer.insertData(body)
-            .then(result =>{
-                if(result){res.json({success : true, message : null})}
-            })
-            .catch(error => next(error))
-        }
-    })
+    customer.getOne({ where: { email: body.email } })
+        .then(data => {
+            if (data) {
+                res.status(406).json({
+                    success: false,
+                    message: "Email is already in database"
+                })
+            } else {
+                body.isDeleted = false
+                body.createdAt = Sequelize.literal('NOW()')
+                body.updatedAt = Sequelize.literal('NOW()')
+                customer.insertData(body)
+                    .then(result => {
+                        if (result) {
+                            res.json({
+                                success: true,
+                                message: null
+                            })
+                        }
+                    })
+                    .catch(error => next(error))
+            }
+        })
 })
 
 module.exports = router

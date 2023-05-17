@@ -7,7 +7,7 @@ let verifyToken = (req,res,next) =>{
     if (!token){
         res.status(401).json({
             success : false,
-            message : 'Không có token'
+            message : 'There is no token in header'
         })
     }else{
         try {
@@ -17,7 +17,7 @@ let verifyToken = (req,res,next) =>{
         } catch (error) {
             res.status(403).json({
                 success : false,
-                message : 'Token không hợp lệ'
+                message : 'Token is invalid'
             })
         }
     }

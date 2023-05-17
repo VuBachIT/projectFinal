@@ -4,7 +4,7 @@ let data;
 data = {
     email : 'test@gmail.com', //string
     password : '123', //string 
-    role : 'admin' //admin or partner or customer (viết thường không hoa)
+    role : 'admin' //admin or partner or customer (viết thường)
 }
 //POST:localhost:3000/user/signup
 data = {
@@ -33,4 +33,8 @@ data = {
 //GET:localhost:3000/partner/promotion?id=1 => sử dụng query (id=1)
 
 //PHẦN ADMIN
-//DELETE:localhost:3000/admin/promotion?id=1 => sử dụng query (id=1)
+//DELETE:localhost:3000/admin/delete
+data = {
+    id : 1, //int
+    type : 'promotion' //admin or partner or customer or promotion (viết thường)
+}

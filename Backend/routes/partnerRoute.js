@@ -91,13 +91,13 @@ router.get('/promotion', (req, res, next) => {
             })
             .then(promotions => {
                 res.json({
-                    success : true,
-                    message : null,
-                    data : promotions
+                    success: true,
+                    message: null,
+                    data: promotions
                 })
             })
             .catch(error => next(error))
-    }else{
+    } else {
         res.sendStatus(405)
     }
 })
@@ -119,7 +119,7 @@ router.post('/promotion', (req, res, next) => {
                     createdAt: Sequelize.literal('NOW()'),
                     updatedAt: Sequelize.literal('NOW()')
                 })
-                    .then(console.log(`Cập nhật id ${element.id}`))
+                    .then(console.log('Insert successful'))
                     .catch(error => next(error))
             });
             res.json({
@@ -128,7 +128,86 @@ router.post('/promotion', (req, res, next) => {
             })
         })
         .catch(error => next(error))
-
 })
+
+router.put('/promotion', (req, res, next) => {
+    let body = req.body
+    body.statusID = 1
+    promotion.updateData(body, { where: { id: body.id } })
+        .then(result => {
+            if (result) {
+                body.vouchers.forEach(element => {
+                    let data = {
+                        quantity: element.quantity,
+                        balanceQty: element.quantity
+                    }
+                    let condition = {
+                        [Op.and]: [
+                            { voucherID: element.id },
+                            { promotionID: body.id }
+                        ]
+                    }
+                    detail.updateData(data, { where : condition})
+                        .then(result => {
+                            if (result) {
+                                console.log('Update successful')
+                            } else {
+                                detail.insertData({
+                                    quantity: element.quantity,
+                                    balanceQty: element.quantity,
+                                    voucherID: element.id,
+                                    promotionID: body.id,
+                                    createdAt: Sequelize.literal('NOW()'),
+                                    updatedAt: Sequelize.literal('NOW()')
+                                })
+                                    .then(console.log('Insert successful'))
+                                    .catch(error => next(error))
+                            }
+                        })
+                        .catch(error => next(error))
+                });
+                res.json({
+                    success: true,
+                    message: null
+                })
+            } else {
+                res.status(404)
+                res.json({
+                    success: false,
+                    message: `Update unsuccessful in promotionID ${body.id}`
+                })
+            }
+        })
+        .catch(error => next(error))
+})
+
+router.delete('/promotion', (req, res, next) => {
+    if (req.query.id) {
+        let query = req.query.id
+        promotion.deleteData({ isDeleted: true }, { where: { id: query } })
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null,
+                    })
+                } else {
+                    res.status(404)
+                    res.json({
+                        success: false,
+                        message: `Delete unsuccessful in promotionID ${query}`
+                    })
+                }
+            })
+    } else {
+        res.status(406)
+        res.json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+
+
 
 module.exports = router
