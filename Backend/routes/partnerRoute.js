@@ -98,7 +98,10 @@ router.get('/promotion', (req, res, next) => {
             })
             .catch(error => next(error))
     } else {
-        res.sendStatus(405)
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
     }
 })
 
@@ -171,8 +174,7 @@ router.put('/promotion', (req, res, next) => {
                     message: null
                 })
             } else {
-                res.status(404)
-                res.json({
+                res.status(404).json({
                     success: false,
                     message: `Update unsuccessful in promotionID ${body.id}`
                 })
@@ -192,16 +194,14 @@ router.delete('/promotion', (req, res, next) => {
                         message: null,
                     })
                 } else {
-                    res.status(404)
-                    res.json({
+                    res.status(404).json({
                         success: false,
                         message: `Delete unsuccessful in promotionID ${query}`
                     })
                 }
             })
     } else {
-        res.status(406)
-        res.json({
+        res.status(406).json({
             success: false,
             message: 'Incorrect method'
         })

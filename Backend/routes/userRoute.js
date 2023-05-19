@@ -68,7 +68,7 @@ router.post('/signin', (req, res, next) => {
                 })
             }
         }).catch(error => next(error))
-    } else {
+    } else if (body.role == 'admin') {
         admin.getOne({
             where: {
                 [Op.and]: [
@@ -94,6 +94,11 @@ router.post('/signin', (req, res, next) => {
                 })
             }
         }).catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect role in body'
+        })
     }
 })
 

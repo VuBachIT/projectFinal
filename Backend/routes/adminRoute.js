@@ -16,6 +16,53 @@ router.get('/', (req, res, next) => {
     res.send('Admin Route')
 })
 
+router.get('/account', (req, res, next) => {
+    if (req.query.type) {
+        let query = req.query.type
+        if (query == "Customer") {
+            customer.getAll()
+                .then(data => {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                })
+                .catch(error => next(error))
+        } else if (query == "Partner") {
+            partner.getAll()
+                .then(data => {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                })
+                .catch(error => next(error))
+        } else if (query == "Admin") {
+            admin.getAll()
+                .then(data => {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                })
+                .catch(error => next(error))
+        } else {
+            res.status(406).json({
+                success: false,
+                message: 'Incorrect type'
+            })
+        }
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+
 router.delete('/delete', (req, res, next) => {
     let body = req.body
     if (body.id && body.type) {
@@ -29,7 +76,7 @@ router.delete('/delete', (req, res, next) => {
                         })
                     }
                 })
-        }else if(body.type == 'customer'){
+        } else if (body.type == 'customer') {
             customer.deleteData({ isDeleted: true }, { where: { id: body.id } })
                 .then(result => {
                     if (result) {
@@ -40,7 +87,7 @@ router.delete('/delete', (req, res, next) => {
                     }
                 })
 
-        }else if(body.type == 'partner'){
+        } else if (body.type == 'partner') {
             partner.deleteData({ isDeleted: true }, { where: { id: body.id } })
                 .then(result => {
                     if (result) {
@@ -51,7 +98,7 @@ router.delete('/delete', (req, res, next) => {
                     }
                 })
 
-        }else if(body.type == 'admin'){
+        } else if (body.type == 'admin') {
             admin.deleteData({ isDeleted: true }, { where: { id: body.id } })
                 .then(result => {
                     if (result) {
@@ -63,7 +110,11 @@ router.delete('/delete', (req, res, next) => {
                 })
         }
     } else {
-        res.sendStatus(405)
+        res.status(406)
+        res.json({
+            success: false,
+            message: 'Incorrect method'
+        })
     }
 })
 

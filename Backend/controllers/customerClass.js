@@ -2,6 +2,20 @@ let models = require('../models')
 let customer = models.Customer
 
 class Customer{
+    getAll(condition){
+        return new Promise((resolve,reject)=>{
+            customer.findAll(condition)
+            .then(response => {
+                let data = []
+                response.forEach(element => {
+                    data.push(element.dataValues)
+                });
+                resolve(data.sort((a,b) => {return a.id - b.id}))
+            })
+            .catch(error =>{reject(new Error(error))})
+        }) 
+    }
+
     getOne(condition){
         return new Promise((resolve,reject)=>{
             customer.findOne(condition)

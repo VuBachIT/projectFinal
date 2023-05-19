@@ -21,6 +21,10 @@ Content-Type: application/json
         {
             "id" : 2,
             "quantity" : 100
+        },
+        {
+            "id" : 3,
+            "quantity" : 50
         }
     ]
 }
