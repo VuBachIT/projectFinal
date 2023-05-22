@@ -89,7 +89,7 @@ router.get('/promotion', (req, res, next) => {
                     model: models.Status,
                 },
                 {
-                    attributes: ['id','title'],
+                    attributes: ['title'],
                     model: models.Game,
                 }
             ],
@@ -115,7 +115,7 @@ router.get('/promotion', (req, res, next) => {
             .then(promotions => {
                 promotions.forEach(parent => {
                     let status = parent.Status.dataValues.state
-                    let game = parent.Game.dataValues
+                    let game = parent.Game.dataValues.title
                     parent.Status = status
                     parent.Game = game
                 })
