@@ -236,6 +236,7 @@ router.post('/promotion', (req, res, next) => {
 // start : '2023-12-30', //string
 // end : '2023-12-30', //string
 // gameID : 1, //int
+// partnerID : 1 //int
 // vouchers : [
 //     {
 //         id : 1, //int

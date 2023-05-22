@@ -3,6 +3,10 @@ let router = express.Router()
 let Sequelize = require('sequelize')
 let models = require('../models');
 
+//Cách sử dụng
+//==> nhập đường dẫn localhost:3000/data/...
+//ví dụ localhost:3000/data/game
+
 router.get('/game',(req,res) => {
     let data = [{
         id: 1,
@@ -20,7 +24,7 @@ router.get('/game',(req,res) => {
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
-    models.Game.create(data).then(res.send("Game Create"))
+    models.Game.bulkCreate(data).then(res.send("Game Create"))
 })
 
 router.get('/status',(req,res) => {
@@ -43,7 +47,7 @@ router.get('/status',(req,res) => {
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
-    models.Status.create(data).then(res.send("Status Create"))
+    models.Status.bulkCreate(data).then(res.send("Status Create"))
 })
 
 router.get('/voucher',(req,res) => {
@@ -69,7 +73,7 @@ router.get('/voucher',(req,res) => {
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
-    models.Voucher.create(data).then(res.send("Voucher Create"))
+    models.Voucher.bulkCreate(data).then(res.send("Voucher Create"))
 })
 
 router.get('/admin',(req,res) => {
@@ -81,7 +85,7 @@ router.get('/admin',(req,res) => {
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
-    models.Admin.create(data).then(res.send("Admin Create"))
+    models.Admin.bulkCreate(data).then(res.send("Admin Create"))
 })
 
 router.get('/category',(req,res) => {
@@ -101,7 +105,7 @@ router.get('/category',(req,res) => {
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
-    models.Category.create(data).then(res.send("Category Create"))
+    models.Category.bulkCreate(data).then(res.send("Category Create"))
 })
 
 module.exports = router
