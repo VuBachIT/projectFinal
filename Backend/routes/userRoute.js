@@ -14,6 +14,12 @@ router.get('/', (req, res, next) => {
     res.send("User Route")
 })
 
+//Dùng để lấy data của user theo từng role với đầu vào :
+//==>{
+// email : "Test", //string
+// password : 'Test', //string
+// role : 'customer' //string (Chỉ có admin, customer, partner ==> viết thường không hoa)
+// }
 router.post('/signin', (req, res, next) => {
     let body = req.body
     if (body.role == 'customer') {
@@ -102,6 +108,13 @@ router.post('/signin', (req, res, next) => {
     }
 })
 
+//Dùng để ghi data của customer với đầu vào :
+//==>{
+// email : "Test", //string
+// password : 'Test', //string
+// phoneNumber : 'Test, //string
+// name : 'Test' //string
+// }
 router.post('/signup', (req, res, next) => {
     let body = req.body
     customer.getOne({ where: { email: body.email } })
@@ -127,6 +140,7 @@ router.post('/signup', (req, res, next) => {
                     .catch(error => next(error))
             }
         })
+        .catch(error => next(error))
 })
 
 module.exports = router

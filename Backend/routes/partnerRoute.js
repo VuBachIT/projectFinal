@@ -7,13 +7,41 @@ let Voucher = require('../controllers/voucherClass')
 let Promotion = require('../controllers/promotionClass')
 let Detail = require('../controllers/detailClass')
 let Game = require('../controllers/gameClass')
+let Partner = require('../controllers/partnerClass')
 let voucher = new Voucher()
 let promotion = new Promotion()
 let detail = new Detail()
 let game = new Game()
+let partner = new Partner()
 
 router.get('/', (req, res, next) => {
     res.send('Partner Route')
+})
+
+//Dùng để cập nhật data của partner với đầu vào :
+//==>{
+// id : 1 //int
+// password : "321", //string
+// address : 'Test', //string
+// name : 'Test' //string
+//}
+router.put('/edit', (req, res, next) => {
+    let body = req.body
+    partner.updateData(body, { where: { id: body.id } })
+        .then(result => {
+            if (result) {
+                res.json({
+                    success: true,
+                    message: null
+                })
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: `Update unsuccessful in partnerID ${body.id}`
+                })
+            }
+        })
+        .catch(error => next(error))
 })
 
 router.get('/voucher', (req, res, next) => {
@@ -61,7 +89,7 @@ router.get('/promotion', (req, res, next) => {
                     model: models.Status,
                 },
                 {
-                    attributes: ['title'],
+                    attributes: ['id','title'],
                     model: models.Game,
                 }
             ],
@@ -87,7 +115,7 @@ router.get('/promotion', (req, res, next) => {
             .then(promotions => {
                 promotions.forEach(parent => {
                     let status = parent.Status.dataValues.state
-                    let game = parent.Game.dataValues.title
+                    let game = parent.Game.dataValues
                     parent.Status = status
                     parent.Game = game
                 })
@@ -110,7 +138,7 @@ router.get('/promotion', (req, res, next) => {
 })
 
 //sử dụng localhost:3000/partner/promotion/:id trong :id là id của promotion
-//vì dụ localhost:3000/partner/promotion/1
+//ví dụ localhost:3000/partner/promotion/1
 router.get('/promotion/:id', (req, res, next) => {
     if (req.params.id) {
         let param = parseInt(req.params.id)
@@ -131,7 +159,7 @@ router.get('/promotion/:id', (req, res, next) => {
                     model: models.Status,
                 },
                 {
-                    attributes: ['title'],
+                    attributes: ['id','title'],
                     model: models.Game,
                 }
             ],
@@ -155,25 +183,25 @@ router.get('/promotion/:id', (req, res, next) => {
                 return data
             })
             .then(data => {
-                if (data){
+                if (data) {
                     let status = data.Status.dataValues.state
-                    let game = data.Game.dataValues.title
+                    let game = data.Game.dataValues
                     data.Status = status
                     data.Game = game
                 }
                 return data
             })
             .then(data => {
-                if (data){
+                if (data) {
                     res.json({
                         success: true,
                         message: null,
                         data: data
                     })
-                }else{
+                } else {
                     res.status(404).json({
-                        success : false,
-                        message : `Not found id ${param}`
+                        success: false,
+                        message: `Not found id ${param}`
                     })
                 }
             })
@@ -193,6 +221,7 @@ router.get('/promotion/:id', (req, res, next) => {
 // start : '2023-12-30', //string
 // end : '2023-12-30', //string
 // gameID : 1, //int
+// partnerID : 1 //int
 // vouchers : [
 //     {
 //         id : 1, //int

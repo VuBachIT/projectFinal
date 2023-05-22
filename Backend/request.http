@@ -3,15 +3,26 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 
 ###
 
-GET http://localhost:3000/partner/promotion/2
+PUT http://localhost:3000/partner/edit
+Content-Type: application/json
 
+{
+    "id" : 1,
+    "password" : "321",
+    "address" : "Test",
+    "name" : "Test"
+}
 
 ###
 
 POST http://localhost:3000/user/signin
 Content-Type: application/json
+
 {
     "email" : "partner@gmail.com", 
     "password" : "123", 
     "role" : "partner",
 }
+
+###
+GET http://localhost:3000/partner/promotion/1
