@@ -14,10 +14,13 @@ let detail = new Detail()
 let game = new Game()
 let partner = new Partner()
 
+//////////Test Route
 router.get('/', (req, res, next) => {
     res.send('Partner Route')
 })
+////////////////////
 
+//////////Update Partner
 //Dùng để cập nhật data của partner với đầu vào :
 //==>{
 // id : 1 //int
@@ -25,7 +28,7 @@ router.get('/', (req, res, next) => {
 // address : 'Test', //string
 // name : 'Test' //string
 //}
-router.put('/edit', (req, res, next) => {
+router.put('/', (req, res, next) => {
     let body = req.body
     partner.updateData(body, { where: { id: body.id } })
         .then(result => {
@@ -43,7 +46,9 @@ router.put('/edit', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+////////////////////
 
+//////////Get All Voucher
 router.get('/voucher', (req, res, next) => {
     voucher.getAll()
         .then(data => {
@@ -55,7 +60,9 @@ router.get('/voucher', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+////////////////////
 
+//////////Get All Game
 router.get('/game', (req, res, next) => {
     game.getAll()
         .then(data => {
@@ -67,7 +74,9 @@ router.get('/game', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+////////////////////
 
+//////////Get All Promotion By PartnerID
 //sử dụng localhost:3000/partner/promotion?id=... trong đó id là partnerID
 router.get('/promotion', (req, res, next) => {
     if (req.query.id) {
@@ -136,7 +145,9 @@ router.get('/promotion', (req, res, next) => {
         })
     }
 })
+////////////////////
 
+//////////Get One Promotion By PromotionID
 //sử dụng localhost:3000/partner/promotion/:id trong :id là id của promotion
 //ví dụ localhost:3000/partner/promotion/1
 router.get('/promotion/:id', (req, res, next) => {
@@ -213,7 +224,9 @@ router.get('/promotion/:id', (req, res, next) => {
         })
     }
 })
+////////////////////
 
+//////////Insert Promotion
 //Dùng để ghi data của promotion với đầu vào :
 //==>{
 // title : "Test", //string
@@ -256,7 +269,9 @@ router.post('/promotion', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+////////////////////
 
+//////////Update Promotion
 //Dùng để cập nhật data của promotion với đầu vào :
 //==>{
 // id : 1 //int
@@ -322,7 +337,9 @@ router.put('/promotion', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+////////////////////
 
+//////////Delete Promotion
 //sử dụng localhost:3000/partner/promotion/:id trong :id là id của promotion
 //vì dụ localhost:3000/partner/promotion/1
 router.delete('/promotion/:id', (req, res, next) => {
@@ -349,5 +366,6 @@ router.delete('/promotion/:id', (req, res, next) => {
         })
     }
 })
+////////////////////
 
 module.exports = router

@@ -10,10 +10,13 @@ let customer = new Customer()
 let admin = new Admin()
 let partner = new Partner()
 
+//////////Test Route
 router.get('/', (req, res, next) => {
     res.send("User Route")
 })
+////////////////////
 
+//////////Get One User By Email And Password
 //Dùng để lấy data của user theo từng role với đầu vào :
 //==>{
 // email : "Test", //string
@@ -107,7 +110,9 @@ router.post('/signin', (req, res, next) => {
         })
     }
 })
+////////////////////
 
+//////////Insert Customer
 //Dùng để ghi data của customer với đầu vào :
 //==>{
 // email : "Test", //string
@@ -142,5 +147,6 @@ router.post('/signup', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+////////////////////
 
 module.exports = router
