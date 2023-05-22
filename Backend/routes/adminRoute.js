@@ -74,6 +74,11 @@ router.delete('/delete', (req, res, next) => {
                             success: true,
                             message: null,
                         })
+                    }else{
+                        res.status(404).json({
+                            success: false,
+                            message: `Delete unsuccessful in promotionID ${body.id}`
+                        })
                     }
                 })
         } else if (body.type == 'customer') {
@@ -83,6 +88,11 @@ router.delete('/delete', (req, res, next) => {
                         res.json({
                             success: true,
                             message: null,
+                        })
+                    }else{
+                        res.status(404).json({
+                            success: false,
+                            message: `Delete unsuccessful in customerID ${body.id}`
                         })
                     }
                 })
@@ -95,6 +105,11 @@ router.delete('/delete', (req, res, next) => {
                             success: true,
                             message: null,
                         })
+                    }else{
+                        res.status(404).json({
+                            success: false,
+                            message: `Delete unsuccessful in partnerID ${body.id}`
+                        })
                     }
                 })
 
@@ -106,12 +121,21 @@ router.delete('/delete', (req, res, next) => {
                             success: true,
                             message: null,
                         })
+                    }else{
+                        res.status(404).json({
+                            success: false,
+                            message: `Delete unsuccessful in adminID ${body.id}`
+                        })
                     }
                 })
+        } else {
+            res.status(406).json({
+                success: false,
+                message: 'Incorrect type'
+            })
         }
     } else {
-        res.status(406)
-        res.json({
+        res.status(406).json({
             success: false,
             message: 'Incorrect method'
         })

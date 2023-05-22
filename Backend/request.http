@@ -1,40 +1,17 @@
-DELETE http://localhost:3000/partner/promotion?id=1
-
+GET http://localhost:3000/partner/voucher
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJwYXJ0bmVyQGdtYWlsLmNvbSIsImlhdCI6MTY4NDY1NzUzN30.N1WXXY5blKOh6Oyuhk8LXOqvGq6eOFhT09HCsqiiff0
 
 ###
 
-PUT http://localhost:3000/partner/promotion
-Content-Type: application/json
+GET http://localhost:3000/partner/promotion/2
 
-{
-    "id" : 1,
-    "title" : "TestC",
-    "description" : "Test",
-    "start" : "2023-05-16",
-    "end" : "2023-05-20",
-    "gameID" : 1,
-    "vouchers" : [
-        {
-            "id" : 1,
-            "quantity" : 50
-        },
-        {
-            "id" : 2,
-            "quantity" : 100
-        },
-        {
-            "id" : 3,
-            "quantity" : 50
-        }
-    ]
-}
 
 ###
 
 POST http://localhost:3000/user/signin
 Content-Type: application/json
 {
-    "email" : "customer@gmail.com", 
+    "email" : "partner@gmail.com", 
     "password" : "123", 
-    "role" : "customer",
+    "role" : "partner",
 }

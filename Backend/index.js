@@ -16,7 +16,7 @@ app.use((req, res, next) => {
     next()
 })
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
     res.send('Test Server')
 })
 
@@ -28,20 +28,10 @@ app.get('/sync', (req, res) => {
     })
 })
 
-app.get('/data',(req,res)=>{
-    //Chỉ dùng khi thêm dữ liệu
-    // let data = {
-    //     ...
-    // }
-    // data.createdAt = Sequelize.literal('NOW()')
-    // data.updatedAt = Sequelize.literal('NOW()')
-    // let models = require('./models');
-    // models.Game.create(data).then(res.send("Test Create"))
-})
-
-app.use('/user',require('./routes/userRoute'))
-app.use('/partner',require('./routes/partnerRoute'))
-app.use('/admin',require('./routes/adminRoute'))
+app.use('/data',require('./routes/dataRoute')) //Chỉ dùng khi thêm dữ liệu
+app.use('/user', require('./routes/userRoute'))
+app.use('/partner', require('./routes/partnerRoute'))
+app.use('/admin', require('./routes/adminRoute'))
 
 app.set('port', process.env.PORT || 3000);
 app.listen(app.get('port'), () => {

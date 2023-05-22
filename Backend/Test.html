@@ -15,7 +15,7 @@
 <body>
     Chỉ dùng để test dữ liệu
     <input name="" id="" class="btn btn-primary" type="button" value="POST"
-        onclick="sendData({email : 'customer@gmail', password :'123', role : 'customer'})">
+        onclick="sendData({email : 'partner@gmail.com', password :'123', role : 'partner'})">
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
@@ -27,7 +27,7 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
         function loadData(data) {
-            axios.get("http://localhost:3000/partner/voucher",data)
+            axios.get("http://localhost:3000/user/signin",data)
                 .then(res => {
                     console.log(res)
                 })
