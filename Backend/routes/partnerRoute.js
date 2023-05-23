@@ -81,7 +81,6 @@ router.get('/game', (req, res, next) => {
 router.get('/promotion', (req, res, next) => {
     if (req.query.id) {
         let query = req.query.id
-        console.log(query)
         promotion.getAll({
             attributes: ['id', 'title', 'description', 'start', 'end'],
             include: [
@@ -189,7 +188,6 @@ router.get('/promotion/:id', (req, res, next) => {
                         element.dataValues.Voucher = voucher.dataValues
                         arr.push(element.dataValues)
                     })
-                    return data
                 }
                 return data
             })

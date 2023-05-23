@@ -34,10 +34,10 @@ router.get('/promotion', (req, res, next) => {
             {
                 attributes: ['state'],
                 model: models.Status,
-                where : { state: 'Pending' }
+                where: { state: 'Pending' }
             },
             {
-                attributes: ['id','title'],
+                attributes: ['id', 'title'],
                 model: models.Game,
             }
         ],
@@ -125,6 +125,41 @@ router.get('/account', (req, res, next) => {
 })
 ///////////////////
 
+//////////Get One Partner
+//sử dụng localhost:3000/admin/find?id=... trong đó id là partnerID
+router.get('/find', (req, res, next) => {
+    if (req.query.id) {
+        let query = req.query.id
+        partner.getOne({
+            where: {
+                [Op.and]: [
+                    { id : query },
+                    { isDeleted: false }
+                ]
+            }
+        }).then(data => {
+            if (data) {
+                res.json({
+                    success: true,
+                    message: null,
+                    data: data
+                })
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: `Not found id ${query}`
+                })
+            }
+        }).catch(error => next(error))
+    }else{
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+///////////////////
+
 //////////Insert Partner
 //Dùng để ghi data của partner với đầu vào :
 //==>{
@@ -156,6 +191,34 @@ router.post('/create', (req, res, next) => {
                         }
                     })
                     .catch(error => next(error))
+            }
+        })
+        .catch(error => next(error))
+})
+///////////////////
+
+//////////Update Partner
+//Dùng để cập nhật data của partner với đầu vào :
+//==>{
+// id : 1 //int
+// password : "321", //string
+// address : 'Test', //string
+// name : 'Test' //string
+//}
+router.put('/edit', (req, res, next) => {
+    let body = req.body
+    partner.updateData(body, { where: { id: body.id } })
+        .then(result => {
+            if (result) {
+                res.json({
+                    success: true,
+                    message: null
+                })
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: `Update unsuccessful in partnerID ${body.id}`
+                })
             }
         })
         .catch(error => next(error))
