@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Game.init({
-    title: DataTypes.STRING
+    title: DataTypes.STRING,
+    isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Game',

@@ -7,10 +7,14 @@ let Promotion = require('../controllers/promotionClass')
 let Partner = require('../controllers/partnerClass')
 let Customer = require('../controllers/customerClass')
 let Admin = require('../controllers/adminClass')
+let Game = require('../controllers/gameClass')
+let Voucher = require('../controllers/voucherClass')
 let promotion = new Promotion()
 let partner = new Partner()
 let customer = new Customer()
 let admin = new Admin()
+let game = new Game()
+let voucher = new Voucher()
 
 //////////Test Route
 router.get('/', (req, res, next) => {
@@ -76,7 +80,7 @@ router.get('/promotion', (req, res, next) => {
 ////////////////////
 
 //////////Get All User (Customer, Admin, Partner)
-//sử dụng localhost:3000/admin/account?type=... trong đó type là loại user (customer,admin,partner ==> viết thường không hoa)
+//sử dụng localhost:3000/admin/account?type=... trong đó type là loại user (customer, admin, partner ==> viết thường không hoa)
 router.get('/account', (req, res, next) => {
     if (req.query.type) {
         let query = req.query.type
@@ -195,38 +199,132 @@ router.post('/create', (req, res, next) => {
         })
         .catch(error => next(error))
 })
-///////////////////
+
+///////////Insert Feature (game, voucher)
+//Dùng để ghi data của feature (game, voucher) với đầu vào :
+//==>{
+// ... ==> dữ liệu của loại game hoặc voucher
+// type : "game" ==> viết thường không hoa
+// }
+router.post('/feature', (req, res, next) => {
+    let body = req.body
+    body.isDeleted = false
+    body.createdAt = Sequelize.literal('NOW()')
+    body.updatedAt = Sequelize.literal('NOW()')
+    if (body.type == 'game') {
+        game.insertData(body)
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else if (body.type == 'voucher') {
+        voucher.insertData(body)
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
 
 //////////Update Partner
-//Dùng để cập nhật data của partner với đầu vào :
+//Dùng để cập nhật data (partner, customer, voucher, game) với đầu vào :
 //==>{
 // id : 1 //int
-// password : "321", //string
-// address : 'Test', //string
-// name : 'Test' //string
+//... ==> dữ liệu cần cập nhật
+// type : 'partner' //string ==> viết thường không hoa
 //}
 router.put('/edit', (req, res, next) => {
     let body = req.body
-    partner.updateData(body, { where: { id: body.id } })
-        .then(result => {
-            if (result) {
-                res.json({
-                    success: true,
-                    message: null
-                })
-            } else {
-                res.status(404).json({
-                    success: false,
-                    message: `Update unsuccessful in partnerID ${body.id}`
-                })
-            }
+    if (body.type == 'partner') {
+        partner.updateData(body, { where: { id: body.id } })
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Update unsuccessful in partnerID ${body.id}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else if (body.type == 'customer') {
+        customer.updateData(body, { where: { id: body.id } })
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Update unsuccessful in customerID ${body.id}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else if (body.type == 'game') {
+        game.updateData(body, { where: { id: body.id } })
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Update unsuccessful in gameID ${body.id}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else if (body.type == 'voucher') {
+        voucher.updateData(body, { where: { id: body.id } })
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Update unsuccessful in customerID ${body.id}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect type'
         })
-        .catch(error => next(error))
+    }
 })
 ///////////////////
 
 //////////Delete By Type (Promotion, Customer, Admin, Partner)
-//Dùng để xóa data (promotion, customer, admin, partner) với đầu vào :
+//Dùng để xóa data (promotion, game, voucher, customer, admin, partner) với đầu vào :
 //==>{
 // id : 1, //int
 // type : 'promotion', //string ==> viết thường không hoa
@@ -246,6 +344,36 @@ router.delete('/delete', (req, res, next) => {
                         res.status(404).json({
                             success: false,
                             message: `Delete unsuccessful in promotionID ${body.id}`
+                        })
+                    }
+                })
+        } else if (body.type == 'game') {
+            game.deleteData({ isDeleted: true }, { where: { id: body.id } })
+                .then(result => {
+                    if (result) {
+                        res.json({
+                            success: true,
+                            message: null,
+                        })
+                    } else {
+                        res.status(404).json({
+                            success: false,
+                            message: `Delete unsuccessful in gameID ${body.id}`
+                        })
+                    }
+                })
+        } else if (body.type == 'voucher') {
+            voucher.deleteData({ isDeleted: true }, { where: { id: body.id } })
+                .then(result => {
+                    if (result) {
+                        res.json({
+                            success: true,
+                            message: null,
+                        })
+                    } else {
+                        res.status(404).json({
+                            success: false,
+                            message: `Delete unsuccessful in voucherID ${body.id}`
                         })
                     }
                 })

@@ -11,16 +11,19 @@ router.get('/game', (req, res) => {
     let data = [{
         id: 1,
         title: 'Game A',
+        isDeleted : false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
         id: 2,
         title: 'Game B',
+        isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
         id: 3,
         title: 'Game C',
+        isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
@@ -56,6 +59,7 @@ router.get('/voucher', (req, res) => {
         title: 'Voucher A',
         description: 'Test',
         value: 0.5,
+        isDeleted : false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
@@ -63,6 +67,7 @@ router.get('/voucher', (req, res) => {
         title: 'Voucher B',
         description: 'Test',
         value: 0.5,
+        isDeleted : false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
@@ -70,6 +75,7 @@ router.get('/voucher', (req, res) => {
         title: 'Voucher C',
         description: 'Test',
         value: 0.5,
+        isDeleted : false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]

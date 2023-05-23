@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     description: DataTypes.STRING,
     value: DataTypes.FLOAT,
+    isDeleted : DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Voucher',

@@ -15,14 +15,12 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:3000/admin/edit
+DELETE http://localhost:3000/admin/delete
 Content-Type: application/json
 
 {
-    "id" : 1,
-    "password" : "ABC", 
-    "address" : "Test",
-    "name" : "Test"
+    "id" : 6,
+    "type" : "game"
 }
 
 ###
