@@ -163,7 +163,7 @@ router.post('/create', (req, res, next) => {
 ///////////////////
 
 //////////Delete By Type (Promotion, Customer, Admin, Partner)
-//Dùng để xóa data (promotion,customer,admin,partner) với đầu vào :
+//Dùng để xóa data (promotion, customer, admin, partner) với đầu vào :
 //==>{
 // id : 1, //int
 // type : 'promotion', //string ==> viết thường không hoa

@@ -16,6 +16,16 @@ class Detail {
         })
     }
 
+    getID(condition) {
+        return new Promise((resolve, reject) => {
+            detail.findOne(condition)
+                .then(response => {
+                    resolve(response != null ? response.dataValues.id : null)
+                })
+                .catch(error => { reject(new Error(error)) })
+        })
+    }
+
     insertData(data) {
         return new Promise((resolve, reject) => {
             detail.create(data)

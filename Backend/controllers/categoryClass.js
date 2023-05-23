@@ -4,7 +4,7 @@ let category = models.Category
 class Category{
     getAll(condition) {
         return new Promise((resolve, reject) => {
-            detail.findAll(condition)
+            category.findAll(condition)
                 .then(response => {
                     let data = []
                     response.forEach(element => {
