@@ -146,7 +146,7 @@ router.post('/create', (req, res, next) => {
                 body.isDeleted = false
                 body.createdAt = Sequelize.literal('NOW()')
                 body.updatedAt = Sequelize.literal('NOW()')
-                customer.insertData(body)
+                partner.insertData(body)
                     .then(result => {
                         if (result) {
                             res.json({
