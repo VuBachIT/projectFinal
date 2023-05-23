@@ -2,9 +2,9 @@ let models = require('../models')
 let game = models.Game
 
 class Game {
-    getAll() {
+    getAll(condition) {
         return new Promise((resolve, reject) => {
-            game.findAll()
+            game.findAll(condition)
                 .then(response => {
                     let data = []
                     response.forEach(element => {

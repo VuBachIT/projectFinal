@@ -16,7 +16,6 @@ class Admin{
         }) 
     }
 
-
     getOne(condition){
         return new Promise((resolve,reject)=>{
             admin.findOne(condition)

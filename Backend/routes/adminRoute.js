@@ -81,7 +81,7 @@ router.get('/account', (req, res, next) => {
     if (req.query.type) {
         let query = req.query.type
         if (query == "customer") {
-            customer.getAll()
+            customer.getAll({ where: { isDeleted: false } })
                 .then(data => {
                     res.json({
                         success: true,
@@ -91,7 +91,7 @@ router.get('/account', (req, res, next) => {
                 })
                 .catch(error => next(error))
         } else if (query == "partner") {
-            partner.getAll()
+            partner.getAll({ where: { isDeleted: false } })
                 .then(data => {
                     res.json({
                         success: true,
@@ -101,7 +101,7 @@ router.get('/account', (req, res, next) => {
                 })
                 .catch(error => next(error))
         } else if (query == "admin") {
-            admin.getAll()
+            admin.getAll({ where: { isDeleted: false } })
                 .then(data => {
                     res.json({
                         success: true,
@@ -133,7 +133,7 @@ router.get('/find', (req, res, next) => {
         partner.getOne({
             where: {
                 [Op.and]: [
-                    { id : query },
+                    { id: query },
                     { isDeleted: false }
                 ]
             }
@@ -151,7 +151,7 @@ router.get('/find', (req, res, next) => {
                 })
             }
         }).catch(error => next(error))
-    }else{
+    } else {
         res.status(406).json({
             success: false,
             message: 'Incorrect method'
