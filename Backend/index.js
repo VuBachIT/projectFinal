@@ -32,6 +32,7 @@ app.use('/data',require('./routes/dataRoute')) //Chỉ dùng khi thêm dữ li�
 app.use('/user', require('./routes/userRoute'))
 app.use('/partner', require('./routes/partnerRoute'))
 app.use('/admin', require('./routes/adminRoute'))
+app.use('/customer',require('./routes/customerRoute'))
 
 app.set('port', process.env.PORT || 3000);
 app.listen(app.get('port'), () => {

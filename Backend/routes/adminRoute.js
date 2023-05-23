@@ -12,10 +12,70 @@ let partner = new Partner()
 let customer = new Customer()
 let admin = new Admin()
 
+//////////Test Route
 router.get('/', (req, res, next) => {
     res.send('Admin Route')
 })
+////////////////////
 
+//////////Get All Promotion Which Have Status 'Pending'
+router.get('/promotion', (req, res, next) => {
+    promotion.getAll({
+        attributes: ['id', 'title', 'description', 'start', 'end'],
+        include: [
+            {
+                attributes: ['quantity', 'balanceQty'],
+                model: models.Detail,
+                include: [{
+                    attributes: ['id', 'title', 'description', 'value'],
+                    model: models.Voucher
+                }]
+            },
+            {
+                attributes: ['state'],
+                model: models.Status,
+                where : { state: 'Pending' }
+            },
+            {
+                attributes: ['id','title'],
+                model: models.Game,
+            }
+        ],
+        where: { isDeleted: false }
+    })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                parent.Details.forEach(child => {
+                    let voucher = child.dataValues.Voucher
+                    child.dataValues.Voucher = voucher.dataValues
+                    arr.push(child.dataValues)
+                })
+                parent.Details = arr
+            })
+            return promotions
+        })
+        .then(promotions => {
+            promotions.forEach(parent => {
+                let status = parent.Status.dataValues.state
+                let game = parent.Game.dataValues
+                parent.Status = status
+                parent.Game = game
+            })
+            return promotions
+        })
+        .then(promotions => {
+            res.json({
+                success: true,
+                message: null,
+                data: promotions
+            })
+        })
+        .catch(error => next(error))
+})
+////////////////////
+
+//////////Get All User (Customer, Admin, Partner)
 //sử dụng localhost:3000/admin/account?type=... trong đó type là loại user (customer,admin,partner ==> viết thường không hoa)
 router.get('/account', (req, res, next) => {
     if (req.query.type) {
@@ -63,61 +123,9 @@ router.get('/account', (req, res, next) => {
         })
     }
 })
+///////////////////
 
-router.get('/promotion', (req, res, next) => {
-    promotion.getAll({
-        attributes: ['id', 'title', 'description', 'start', 'end'],
-        include: [
-            {
-                attributes: ['quantity', 'balanceQty'],
-                model: models.Detail,
-                include: [{
-                    attributes: ['id', 'title', 'description', 'value'],
-                    model: models.Voucher
-                }]
-            },
-            {
-                attributes: ['state'],
-                model: models.Status,
-            },
-            {
-                attributes: ['id','title'],
-                model: models.Game,
-            }
-        ],
-        where: { isDeleted: false }
-    })
-        .then(promotions => {
-            let arr = []
-            promotions.forEach(parent => {
-                parent.Details.forEach(child => {
-                    let voucher = child.dataValues.Voucher
-                    child.dataValues.Voucher = voucher.dataValues
-                    arr.push(child.dataValues)
-                })
-                parent.Details = arr
-            })
-            return promotions
-        })
-        .then(promotions => {
-            promotions.forEach(parent => {
-                let status = parent.Status.dataValues.state
-                let game = parent.Game.dataValues
-                parent.Status = status
-                parent.Game = game
-            })
-            return promotions
-        })
-        .then(promotions => {
-            res.json({
-                success: true,
-                message: null,
-                data: promotions
-            })
-        })
-        .catch(error => next(error))
-})
-
+//////////Insert Partner
 //Dùng để ghi data của partner với đầu vào :
 //==>{
 // email : "Test", //string
@@ -152,7 +160,14 @@ router.post('/create', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+///////////////////
 
+//////////Delete By Type (Promotion, Customer, Admin, Partner)
+//Dùng để xóa data (promotion,customer,admin,partner) với đầu vào :
+//==>{
+// id : 1, //int
+// type : 'promotion', //string ==> viết thường không hoa
+// }
 router.delete('/delete', (req, res, next) => {
     let body = req.body
     if (body.id && body.type) {
@@ -231,5 +246,6 @@ router.delete('/delete', (req, res, next) => {
         })
     }
 })
+///////////////////
 
 module.exports = router

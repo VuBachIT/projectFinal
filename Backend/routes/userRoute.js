@@ -16,7 +16,7 @@ router.get('/', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get One User By Email And Password
+//////////Get One User (Customer, Admin, Partner) By Email And Password
 //Dùng để lấy data của user theo từng role với đầu vào :
 //==>{
 // email : "Test", //string

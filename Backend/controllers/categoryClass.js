@@ -1,10 +1,10 @@
 let models = require('../models')
-let game = models.Game
+let category = models.Category
 
-class Game {
-    getAll() {
+class Category{
+    getAll(condition) {
         return new Promise((resolve, reject) => {
-            game.findAll()
+            detail.findAll(condition)
                 .then(response => {
                     let data = []
                     response.forEach(element => {
@@ -12,9 +12,9 @@ class Game {
                     });
                     resolve(data.sort((a, b) => { return a.id - b.id }))
                 })
-                .catch(error => { reject(new Error(error)) })
+                .catch(error => reject(new Error(error)))
         })
     }
 }
 
-module.exports = Game
+module.exports = Category
