@@ -16,11 +16,11 @@ class Detail {
         })
     }
 
-    getID(condition) {
+    getOne(condition) {
         return new Promise((resolve, reject) => {
             detail.findOne(condition)
                 .then(response => {
-                    resolve(response != null ? response.dataValues.id : null)
+                    resolve(response != null ? response.dataValues : null)
                 })
                 .catch(error => { reject(new Error(error)) })
         })

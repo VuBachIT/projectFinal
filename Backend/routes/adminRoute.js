@@ -200,7 +200,7 @@ router.post('/create', (req, res, next) => {
         .catch(error => next(error))
 })
 
-///////////Insert Feature (game, voucher)
+///////////Insert Feature (Game, Voucher)
 //Dùng để ghi data của feature (game, voucher) với đầu vào :
 //==>{
 // ... ==> dữ liệu của loại game hoặc voucher

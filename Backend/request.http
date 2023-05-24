@@ -1,26 +1,31 @@
-GET http://localhost:3000/partner/voucher
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJwYXJ0bmVyQGdtYWlsLmNvbSIsImlhdCI6MTY4NDY1NzUzN30.N1WXXY5blKOh6Oyuhk8LXOqvGq6eOFhT09HCsqiiff0
-
-###
-
-PUT http://localhost:3000/partner/edit
+POST http://localhost:3000/partner/promotion
 Content-Type: application/json
 
 {
-    "id" : 1,
-    "password" : "321",
-    "address" : "Test",
-    "name" : "Test"
+    "title" : "Test",
+    "description" : "Test",
+    "start" : "2023-12-30",
+    "end" : "2023-12-30",
+    "gameID" : 1,
+    "partnerID" : 1,
+    "vouchers" : [
+        {
+            "id" : 1,
+            "quantity" : 50 
+        }
+    ] 
 }
 
 ###
 
-DELETE http://localhost:3000/admin/delete
+POST http://localhost:3000/customer/reward
 Content-Type: application/json
 
 {
-    "id" : 6,
-    "type" : "game"
+    "expDate" : "2023-12-12",
+    "customerID" : 1,
+    "voucherID" : 1,
+    "promotionID" : 2
 }
 
 ###

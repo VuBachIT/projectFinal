@@ -50,7 +50,7 @@ router.put('/', (req, res, next) => {
 
 //////////Get All Voucher
 router.get('/voucher', (req, res, next) => {
-    voucher.getAll()
+    voucher.getAll({ where: { isDeleted: false } })
         .then(data => {
             res.json({
                 success: true,
@@ -64,7 +64,7 @@ router.get('/voucher', (req, res, next) => {
 
 //////////Get All Game
 router.get('/game', (req, res, next) => {
-    game.getAll()
+    game.getAll({ where: { isDeleted: false } })
         .then(data => {
             res.json({
                 success: true,
@@ -169,7 +169,7 @@ router.get('/promotion/:id', (req, res, next) => {
                     model: models.Status,
                 },
                 {
-                    attributes: ['id','title'],
+                    attributes: ['id', 'title'],
                     model: models.Game,
                 }
             ],
@@ -232,7 +232,7 @@ router.get('/promotion/:id', (req, res, next) => {
 // start : '2023-12-30', //string
 // end : '2023-12-30', //string
 // gameID : 1, //int
-// partnerID : 1 //int
+// partnerID : 1, //int
 // vouchers : [
 //     {
 //         id : 1, //int
