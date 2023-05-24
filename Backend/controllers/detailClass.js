@@ -22,7 +22,7 @@ class Detail {
                 .then(response => {
                     resolve(response != null ? response.dataValues : null)
                 })
-                .catch(error => { reject(new Error(error)) })
+                .catch(error => reject(new Error(error)))
         })
     }
 

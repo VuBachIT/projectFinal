@@ -41,7 +41,7 @@ router.put('/', (req, res, next) => {
                     message: null
                 })
             } else {
-                res.status(404).json({
+                res.status(400).json({
                     success: false,
                     message: `Update unsuccessful in customerID ${body.id}`
                 })
@@ -51,7 +51,7 @@ router.put('/', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Promotion Which Have Status 'Accepted'
+//////////Get All Promotions Which Have Status 'Accepted'
 router.get('/promotion', (req, res, next) => {
     promotion.getAll({
         attributes: ['id', 'title', 'description', 'start', 'end'],
@@ -134,9 +134,37 @@ router.get('/category', (req, res, next) => {
 })
 ////////////////////
 
+//////////Get All Voucher's Customer When Customer Wins The Game
+//sử dụng localhost:3000/customer/prize?id=... trong đó id là customerID
 router.get('/prize', (req, res, next) => {
-
+    let date = new Date()
+    if(req.query.id){
+        let query = req.query.id
+        activity.getAll({
+            where: {
+                [Op.and]: [
+                    { expDate: { [Op.gte]: date } },
+                    { isUsed: false },
+                    { customerID : query }
+                ]
+            }
+        })
+            .then(data => {
+                res.json({
+                    success: true,
+                    message: null,
+                    data: data
+                })
+            })
+            .catch(error => next(error))
+    }else{
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
 })
+////////////////////
 
 //////////Insert Participation
 //Dùng để ghi data của participation với đầu vào :
@@ -161,11 +189,11 @@ router.post('/join', (req, res, next) => {
 })
 /////////////////////
 
-//////////Insert Voucher When Customer Win The Game
+//////////Insert Voucher When Customer Wins The Game
 //Dùng để ghi data của customer khi nhận được voucher với đầu vào :
 //==>{
 // expDate : "2023-12-12" //string
-// customerId : 1 //int
+// customerID : 1 //int
 // promotionID : 1, //int
 // voucherID : 1 //int
 //}
@@ -201,7 +229,7 @@ router.post('/reward', (req, res, next) => {
                                         message: null
                                     })
                                 } else {
-                                    res.status(404).json({
+                                    res.status(400).json({
                                         success: false,
                                         message: `Update quantity unsuccessful in detailID ${data.id}`
                                     })
@@ -220,6 +248,48 @@ router.post('/reward', (req, res, next) => {
         .catch(error => next(error))
 })
 
+//////////Update Voucher When Customer Receives From Another Customer
+//Dùng để cập nhật data của customer khi nhận được voucher từ customer khác với đầu vào :
+//==>{
+// email : "test@gmail.com" //string
+// activityID : 1 //int
+//}
+router.post('/gift', (req, res, next) => {
+    let body = req.body
+    customer.getOne({
+        where: {
+            [Op.and]: [
+                { email: body.email },
+                { isDeleted: false }
+            ]
+        }
+    })
+        .then(data => {
+            if (!data) {
+                res.status(404).json({
+                    success: false,
+                    message: "Not found customer"
+                })
+            } else {
+                activity.updateData({ customerID: data.id }, { where: { id: body.activityID } })
+                    .then(result => {
+                        if (result) {
+                            res.json({
+                                success: true,
+                                message: null
+                            })
+                        } else {
+                            res.status(400).json({
+                                success: false,
+                                message: `Update unsuccessful in activityID ${body.activityID}`
+                            })
+                        }
+                    })
+                    .catch(error => next(error))
+            }
+        })
+        .catch(error => next(error))
+})
 
 
 module.exports = router

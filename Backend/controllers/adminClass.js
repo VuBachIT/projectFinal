@@ -12,7 +12,7 @@ class Admin{
                 });
                 resolve(data.sort((a,b) => {return a.id - b.id}))
             })
-            .catch(error =>{reject(new Error(error))})
+            .catch(error =>reject(new Error(error)))
         }) 
     }
 
@@ -22,7 +22,7 @@ class Admin{
             .then(response => {
                 resolve(response != null ? response.dataValues : null)
             })
-            .catch(error =>{reject(new Error(error))})
+            .catch(error =>reject(new Error(error)))
         }) 
     }
 

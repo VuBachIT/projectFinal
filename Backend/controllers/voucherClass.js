@@ -12,7 +12,7 @@ class Voucher {
                     });
                     resolve(data.sort((a, b) => { return a.id - b.id }))
                 })
-                .catch(error => { reject(new Error(error)) })
+                .catch(error => reject(new Error(error)))
         })
     }
 

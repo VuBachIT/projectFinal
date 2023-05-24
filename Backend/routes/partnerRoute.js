@@ -38,7 +38,7 @@ router.put('/', (req, res, next) => {
                     message: null
                 })
             } else {
-                res.status(404).json({
+                res.status(400).json({
                     success: false,
                     message: `Update unsuccessful in partnerID ${body.id}`
                 })
@@ -48,7 +48,7 @@ router.put('/', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Voucher
+//////////Get All Vouchers
 router.get('/voucher', (req, res, next) => {
     voucher.getAll({ where: { isDeleted: false } })
         .then(data => {
@@ -62,7 +62,7 @@ router.get('/voucher', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Game
+//////////Get All Games
 router.get('/game', (req, res, next) => {
     game.getAll({ where: { isDeleted: false } })
         .then(data => {
@@ -76,7 +76,7 @@ router.get('/game', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Promotion By PartnerID
+//////////Get All Promotions By PartnerID
 //sử dụng localhost:3000/partner/promotion?id=... trong đó id là partnerID
 router.get('/promotion', (req, res, next) => {
     if (req.query.id) {
@@ -327,7 +327,7 @@ router.put('/promotion', (req, res, next) => {
                     message: null
                 })
             } else {
-                res.status(404).json({
+                res.status(400).json({
                     success: false,
                     message: `Update unsuccessful in promotionID ${body.id}`
                 })
@@ -351,7 +351,7 @@ router.delete('/promotion/:id', (req, res, next) => {
                         message: null,
                     })
                 } else {
-                    res.status(404).json({
+                    res.status(400).json({
                         success: false,
                         message: `Delete unsuccessful in promotionID ${param}`
                     })

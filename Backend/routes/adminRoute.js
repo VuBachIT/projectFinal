@@ -22,7 +22,7 @@ router.get('/', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Promotion Which Have Status 'Pending'
+//////////Get All Promotions Which Have Status 'Pending'
 router.get('/promotion', (req, res, next) => {
     promotion.getAll({
         attributes: ['id', 'title', 'description', 'start', 'end'],
@@ -79,7 +79,7 @@ router.get('/promotion', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All User (Customer, Admin, Partner)
+//////////Get All Users (Customer, Admin, Partner)
 //sử dụng localhost:3000/admin/account?type=... trong đó type là loại user (customer, admin, partner ==> viết thường không hoa)
 router.get('/account', (req, res, next) => {
     if (req.query.type) {
@@ -177,7 +177,7 @@ router.post('/create', (req, res, next) => {
     partner.getOne({ where: { email: body.email } })
         .then(data => {
             if (data) {
-                res.status(406).json({
+                res.status(400).json({
                     success: false,
                     message: "Email is already in database"
                 })
@@ -259,7 +259,7 @@ router.put('/edit', (req, res, next) => {
                         message: null
                     })
                 } else {
-                    res.status(404).json({
+                    res.status(400).json({
                         success: false,
                         message: `Update unsuccessful in partnerID ${body.id}`
                     })
@@ -275,7 +275,7 @@ router.put('/edit', (req, res, next) => {
                         message: null
                     })
                 } else {
-                    res.status(404).json({
+                    res.status(400).json({
                         success: false,
                         message: `Update unsuccessful in customerID ${body.id}`
                     })
@@ -291,7 +291,7 @@ router.put('/edit', (req, res, next) => {
                         message: null
                     })
                 } else {
-                    res.status(404).json({
+                    res.status(400).json({
                         success: false,
                         message: `Update unsuccessful in gameID ${body.id}`
                     })
@@ -307,9 +307,9 @@ router.put('/edit', (req, res, next) => {
                         message: null
                     })
                 } else {
-                    res.status(404).json({
+                    res.status(400).json({
                         success: false,
-                        message: `Update unsuccessful in customerID ${body.id}`
+                        message: `Update unsuccessful in voucherID ${body.id}`
                     })
                 }
             })
@@ -341,7 +341,7 @@ router.delete('/delete', (req, res, next) => {
                             message: null,
                         })
                     } else {
-                        res.status(404).json({
+                        res.status(400).json({
                             success: false,
                             message: `Delete unsuccessful in promotionID ${body.id}`
                         })
@@ -356,7 +356,7 @@ router.delete('/delete', (req, res, next) => {
                             message: null,
                         })
                     } else {
-                        res.status(404).json({
+                        res.status(400).json({
                             success: false,
                             message: `Delete unsuccessful in gameID ${body.id}`
                         })
@@ -371,7 +371,7 @@ router.delete('/delete', (req, res, next) => {
                             message: null,
                         })
                     } else {
-                        res.status(404).json({
+                        res.status(400).json({
                             success: false,
                             message: `Delete unsuccessful in voucherID ${body.id}`
                         })
@@ -386,7 +386,7 @@ router.delete('/delete', (req, res, next) => {
                             message: null,
                         })
                     } else {
-                        res.status(404).json({
+                        res.status(400).json({
                             success: false,
                             message: `Delete unsuccessful in customerID ${body.id}`
                         })
@@ -402,7 +402,7 @@ router.delete('/delete', (req, res, next) => {
                             message: null,
                         })
                     } else {
-                        res.status(404).json({
+                        res.status(400).json({
                             success: false,
                             message: `Delete unsuccessful in partnerID ${body.id}`
                         })
@@ -418,7 +418,7 @@ router.delete('/delete', (req, res, next) => {
                             message: null,
                         })
                     } else {
-                        res.status(404).json({
+                        res.status(400).json({
                             success: false,
                             message: `Delete unsuccessful in adminID ${body.id}`
                         })
