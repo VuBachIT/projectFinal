@@ -354,7 +354,7 @@ router.get('/category', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Reward's Customer When Customer Wins The Game
+//////////Get All Reward
 //sử dụng localhost:3000/customer/reward?id=... trong đó id là customerID
 router.get('/reward', (req, res, next) => {
     let date = new Date()
@@ -386,7 +386,7 @@ router.get('/reward', (req, res, next) => {
 })
 ////////////////////
 
-//////////Insert Reward When Customer Wins The Game
+//////////Insert Reward (Win The Game)
 //Dùng để ghi data của customer khi nhận được voucher với đầu vào :
 //==>{
 // expDate : "2023-12-12" //string
@@ -446,8 +446,8 @@ router.post('/reward', (req, res, next) => {
 })
 /////////////////////
 
-//////////Update Reward When Customer Receives From Another Customer
-//Dùng để cập nhật data của customer khi nhận được voucher từ customer khác với đầu vào :
+//////////Update Reward (Gift The Voucher)
+//Dùng để cập nhật data của customer khi nhận tặng voucher cho customer khác :
 //==>{
 // email : "test@gmail.com" //string
 // rewardID : 1 //int
@@ -490,7 +490,7 @@ router.put('/reward', (req, res, next) => {
 })
 /////////////////////
 
-//////////Insert reward's Customer When Customer Joins The Promotion
+//////////Insert Participation (Join The Promotion)
 //Dùng để ghi data của participation với đầu vào :
 //==>{
 // customerId : 1 //int

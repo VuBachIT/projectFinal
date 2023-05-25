@@ -157,9 +157,8 @@ router.get('/promotion', (req, res, next) => {
 //sử dụng localhost:3000/partner/promotion/:id trong :id là id của promotion
 //ví dụ localhost:3000/partner/promotion/1
 router.get('/promotion/:id', (req, res, next) => {
-    if (req.params.id) {
+    if (!isNaN(req.params.id)) {
         let param = parseInt(req.params.id)
-        console.log(param)
         promotion.getOne({
             attributes: ['id', 'title', 'description', 'start', 'end'],
             include: [
@@ -348,7 +347,7 @@ router.put('/promotion', (req, res, next) => {
 //sử dụng localhost:3000/partner/promotion/:id trong :id là id của promotion
 //vì dụ localhost:3000/partner/promotion/1
 router.delete('/promotion/:id', (req, res, next) => {
-    if (req.params.id) {
+    if (!isNaN(req.params.id)) {
         let param = parseInt(req.params.id)
         promotion.deleteData({ isDeleted: true }, { where: { id: param } })
             .then(result => {

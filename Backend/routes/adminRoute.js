@@ -45,7 +45,8 @@ router.get('/promotion', (req, res, next) => {
                 model: models.Game,
             }
         ],
-        where: { isDeleted: false }
+        where: { isDeleted: false },
+        order: [['id', 'ASC']]
     })
         .then(promotions => {
             let arr = []
@@ -79,13 +80,44 @@ router.get('/promotion', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Users (Customer, Admin, Partner)
+//////////Delete Promotion
+//sử dụng localhost:3000/admin/promotion?id=... trong đó id là promotionID
+router.delete('/promotion', (req, res, next) => {
+    if (req.query.id) {
+        let query = req.query.id
+        promotion.deleteData({ isDeleted: true }, { where: { id: query } })
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null,
+                    })
+                } else {
+                    res.status(400).json({
+                        success: false,
+                        message: `Delete unsuccessful in promotionID ${query}`
+                    })
+                }
+            })
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+////////////////////
+
+//////////Get All Account (Customer, Admin, Partner)
 //sử dụng localhost:3000/admin/account?type=... trong đó type là loại user (customer, admin, partner ==> viết thường không hoa)
 router.get('/account', (req, res, next) => {
     if (req.query.type) {
         let query = req.query.type
         if (query == "customer") {
-            customer.getAll({ where: { isDeleted: false } })
+            customer.getAll({
+                where: { isDeleted: false },
+                order: [['id', 'ASC']]
+            })
                 .then(data => {
                     res.json({
                         success: true,
@@ -95,7 +127,10 @@ router.get('/account', (req, res, next) => {
                 })
                 .catch(error => next(error))
         } else if (query == "partner") {
-            partner.getAll({ where: { isDeleted: false } })
+            partner.getAll({
+                where: { isDeleted: false },
+                order: [['id', 'ASC']]
+            })
                 .then(data => {
                     res.json({
                         success: true,
@@ -105,7 +140,10 @@ router.get('/account', (req, res, next) => {
                 })
                 .catch(error => next(error))
         } else if (query == "admin") {
-            admin.getAll({ where: { isDeleted: false } })
+            admin.getAll({
+                where: { isDeleted: false },
+                order: [['id', 'ASC']]
+            })
                 .then(data => {
                     res.json({
                         success: true,
@@ -129,15 +167,15 @@ router.get('/account', (req, res, next) => {
 })
 ///////////////////
 
-//////////Get One Partner
-//sử dụng localhost:3000/admin/find?id=... trong đó id là partnerID
-router.get('/find', (req, res, next) => {
-    if (req.query.id) {
-        let query = req.query.id
+//////////Get One Account (Partner)
+//sử dụng localhost:3000/admin/account/:id trong đó :id là partnerID
+router.get('/account/:id', (req, res, next) => {
+    if (!isNaN(req.params.id)) {
+        let param = req.params.id
         partner.getOne({
             where: {
                 [Op.and]: [
-                    { id: query },
+                    { id: param },
                     { isDeleted: false }
                 ]
             }
@@ -151,7 +189,7 @@ router.get('/find', (req, res, next) => {
             } else {
                 res.status(404).json({
                     success: false,
-                    message: `Not found id ${query}`
+                    message: `Not found id ${param}`
                 })
             }
         }).catch(error => next(error))
@@ -164,7 +202,7 @@ router.get('/find', (req, res, next) => {
 })
 ///////////////////
 
-//////////Insert Partner
+//////////Insert Account (Partner)
 //Dùng để ghi data của partner với đầu vào :
 //==>{
 // email : "Test", //string
@@ -172,7 +210,7 @@ router.get('/find', (req, res, next) => {
 // address : 'Test', //string
 // name : 'Test' //string
 // }
-router.post('/create', (req, res, next) => {
+router.post('/account', (req, res, next) => {
     let body = req.body
     partner.getOne({ where: { email: body.email } })
         .then(data => {
@@ -199,9 +237,193 @@ router.post('/create', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+///////////////////
+
+//////////Delete Account (Customer, Admin, Partner)
+//Dùng để xóa data (customer, admin, partner) với đầu vào :
+//==>{
+// id : 1, //int
+// type : 'promotion', //string ==> viết thường không hoa
+// }
+router.delete('/account', (req, res, next) => {
+    let body = req.body
+    if (body.id && body.type) {
+        if (body.type == 'customer') {
+            customer.deleteData({ isDeleted: true }, { where: { id: body.id } })
+                .then(result => {
+                    if (result) {
+                        res.json({
+                            success: true,
+                            message: null,
+                        })
+                    } else {
+                        res.status(400).json({
+                            success: false,
+                            message: `Delete unsuccessful in customerID ${body.id}`
+                        })
+                    }
+                })
+
+        } else if (body.type == 'partner') {
+            partner.deleteData({ isDeleted: true }, { where: { id: body.id } })
+                .then(result => {
+                    if (result) {
+                        res.json({
+                            success: true,
+                            message: null,
+                        })
+                    } else {
+                        res.status(400).json({
+                            success: false,
+                            message: `Delete unsuccessful in partnerID ${body.id}`
+                        })
+                    }
+                })
+
+        } else if (body.type == 'admin') {
+            admin.deleteData({ isDeleted: true }, { where: { id: body.id } })
+                .then(result => {
+                    if (result) {
+                        res.json({
+                            success: true,
+                            message: null,
+                        })
+                    } else {
+                        res.status(400).json({
+                            success: false,
+                            message: `Delete unsuccessful in adminID ${body.id}`
+                        })
+                    }
+                })
+        } else {
+            res.status(406).json({
+                success: false,
+                message: 'Incorrect type'
+            })
+        }
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+///////////////////
+
+//////////Get All Feature (Game, Voucher)
+//sử dụng localhost:3000/admin/feature?type=... trong đó type là loại user (game, voucher ==> viết thường không hoa)
+router.get('/feature', (req, res, next) => {
+    if (req.query.type) {
+        let query = req.query.type
+        if (query == "game") {
+            game.getAll({
+                where: { isDeleted: false },
+                order: [['id', 'ASC']]
+            })
+                .then(data => {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                })
+                .catch(error => next(error))
+        } else if (query == "voucher") {
+            voucher.getAll({
+                where: { isDeleted: false },
+                order: [['id', 'ASC']]
+            })
+                .then(data => {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                })
+                .catch(error => next(error))
+        } else {
+            res.status(406).json({
+                success: false,
+                message: 'Incorrect type'
+            })
+        }
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+///////////////////
+
+//////////Get One Feature (Game, Voucher)
+//sử dụng localhost:3000/admin/feature/:id?type=... trong đó type là loại user (game, voucher ==> viết thường không hoa)
+//và :id là gameID hoặc voucherID tùy thuộc vào type
+router.get('/feature/:id', (req, res, next) => {
+    if (!isNaN(req.params.id)) {
+        let query = req.query.type
+        let param = req.params.id
+        if (query == 'game') {
+            game.getOne({
+                where: {
+                    [Op.and]: [
+                        { id: param },
+                        { isDeleted: false }
+                    ]
+                }
+            }).then(data => {
+                if (data) {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Not found id ${param}`
+                    })
+                }
+            }).catch(error => next(error))
+        } else if (query == 'voucher') {
+            voucher.getOne({
+                where: {
+                    [Op.and]: [
+                        { id: param },
+                        { isDeleted: false }
+                    ]
+                }
+            }).then(data => {
+                if (data) {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Not found id ${param}`
+                    })
+                }
+            }).catch(error => next(error))
+        } else {
+            res.status(406).json({
+                success: false,
+                message: 'Incorrect type'
+            })
+        }
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+///////////////////
 
 ///////////Insert Feature (Game, Voucher)
-//Dùng để ghi data của feature (game, voucher) với đầu vào :
+//Dùng để ghi data của feature (voucher, game) với đầu vào :
 //==>{
 // ... ==> dữ liệu của loại game hoặc voucher
 // type : "game" ==> viết thường không hoa
@@ -240,15 +462,16 @@ router.post('/feature', (req, res, next) => {
         })
     }
 })
+///////////////////
 
-//////////Update Partner
-//Dùng để cập nhật data (partner, customer, voucher, game) với đầu vào :
+//////////Update Feature (Game, Voucher)
+//Dùng để cập nhật data (voucher, game) với đầu vào :
 //==>{
 // id : 1 //int
 //... ==> dữ liệu cần cập nhật
 // type : 'partner' //string ==> viết thường không hoa
 //}
-router.put('/edit', (req, res, next) => {
+router.put('/feature', (req, res, next) => {
     let body = req.body
     if (body.type == 'partner') {
         partner.updateData(body, { where: { id: body.id } })
@@ -321,33 +544,18 @@ router.put('/edit', (req, res, next) => {
         })
     }
 })
-///////////////////
+////////////////////
 
-//////////Delete By Type (Promotion, Customer, Admin, Partner)
-//Dùng để xóa data (promotion, game, voucher, customer, admin, partner) với đầu vào :
+//////////Delete Feature (Game, Voucher)
+//Dùng để xóa data (promotion, voucher, game) với đầu vào :
 //==>{
 // id : 1, //int
 // type : 'promotion', //string ==> viết thường không hoa
 // }
-router.delete('/delete', (req, res, next) => {
+router.delete('/feature', (req, res, next) => {
     let body = req.body
     if (body.id && body.type) {
-        if (body.type == 'promotion') {
-            promotion.deleteData({ isDeleted: true }, { where: { id: body.id } })
-                .then(result => {
-                    if (result) {
-                        res.json({
-                            success: true,
-                            message: null,
-                        })
-                    } else {
-                        res.status(400).json({
-                            success: false,
-                            message: `Delete unsuccessful in promotionID ${body.id}`
-                        })
-                    }
-                })
-        } else if (body.type == 'game') {
+        if (body.type == 'game') {
             game.deleteData({ isDeleted: true }, { where: { id: body.id } })
                 .then(result => {
                     if (result) {
@@ -377,53 +585,6 @@ router.delete('/delete', (req, res, next) => {
                         })
                     }
                 })
-        } else if (body.type == 'customer') {
-            customer.deleteData({ isDeleted: true }, { where: { id: body.id } })
-                .then(result => {
-                    if (result) {
-                        res.json({
-                            success: true,
-                            message: null,
-                        })
-                    } else {
-                        res.status(400).json({
-                            success: false,
-                            message: `Delete unsuccessful in customerID ${body.id}`
-                        })
-                    }
-                })
-
-        } else if (body.type == 'partner') {
-            partner.deleteData({ isDeleted: true }, { where: { id: body.id } })
-                .then(result => {
-                    if (result) {
-                        res.json({
-                            success: true,
-                            message: null,
-                        })
-                    } else {
-                        res.status(400).json({
-                            success: false,
-                            message: `Delete unsuccessful in partnerID ${body.id}`
-                        })
-                    }
-                })
-
-        } else if (body.type == 'admin') {
-            admin.deleteData({ isDeleted: true }, { where: { id: body.id } })
-                .then(result => {
-                    if (result) {
-                        res.json({
-                            success: true,
-                            message: null,
-                        })
-                    } else {
-                        res.status(400).json({
-                            success: false,
-                            message: `Delete unsuccessful in adminID ${body.id}`
-                        })
-                    }
-                })
         } else {
             res.status(406).json({
                 success: false,
@@ -437,6 +598,6 @@ router.delete('/delete', (req, res, next) => {
         })
     }
 })
-///////////////////
+////////////////////
 
 module.exports = router
