@@ -1,10 +1,10 @@
 let models = require('../models')
-let activity = models.Activity
+let reward = models.Reward
 
-class Activity {
+class Reward {
     getAll(condition) {
         return new Promise((resolve, reject) => {
-            activity.findAll(condition)
+            reward.findAll(condition)
                 .then(response => {
                     let data = []
                     response.forEach(element => {
@@ -18,7 +18,7 @@ class Activity {
 
     insertData(data) {
         return new Promise((resolve, reject) => {
-            activity.create(data)
+            reward.create(data)
                 .then(resolve(true))
                 .catch(error => reject(new Error(error)))
         })
@@ -26,7 +26,7 @@ class Activity {
 
     updateData(data, condition) {
         return new Promise((resolve, reject) => {
-            activity.update(data, condition)
+            reward.update(data, condition)
                 .then(response => {
                     resolve(response[0] > 0 ? true : false)
                 })
@@ -35,4 +35,4 @@ class Activity {
     }
 }
 
-module.exports = Activity
+module.exports = Reward

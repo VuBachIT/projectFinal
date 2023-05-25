@@ -50,7 +50,10 @@ router.put('/', (req, res, next) => {
 
 //////////Get All Vouchers
 router.get('/voucher', (req, res, next) => {
-    voucher.getAll({ where: { isDeleted: false } })
+    voucher.getAll({
+        where: { isDeleted: false },
+        order: [['id', 'ASC']]
+    })
         .then(data => {
             res.json({
                 success: true,
@@ -64,7 +67,10 @@ router.get('/voucher', (req, res, next) => {
 
 //////////Get All Games
 router.get('/game', (req, res, next) => {
-    game.getAll({ where: { isDeleted: false } })
+    game.getAll({
+        where: { isDeleted: false },
+        order: [['id', 'ASC']]
+    })
         .then(data => {
             res.json({
                 success: true,
@@ -106,7 +112,8 @@ router.get('/promotion', (req, res, next) => {
                     { partnerID: query },
                     { isDeleted: false }
                 ]
-            }
+            },
+            order: [['id', 'ASC']]
         })
             .then(promotions => {
                 let arr = []

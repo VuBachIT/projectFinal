@@ -7,13 +7,13 @@ let Promotion = require('../controllers/promotionClass')
 let Category = require('../controllers/categoryClass')
 let Participation = require('../controllers/participationClass')
 let Customer = require('../controllers/customerClass')
-let Activity = require('../controllers/activityClass')
+let Reward = require('../controllers/rewardClass')
 let Detail = require('../controllers/detailClass')
 let promotion = new Promotion()
 let category = new Category()
 let participation = new Participation()
 let customer = new Customer()
-let activity = new Activity()
+let reward = new Reward()
 let detail = new Detail
 
 //////////Test Route
@@ -51,7 +51,7 @@ router.put('/', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Promotions Which Have Status 'Accepted'
+//////////Get All Promotion Which Have Status 'Accepted'
 router.get('/promotion', (req, res, next) => {
     promotion.getAll({
         attributes: ['id', 'title', 'description', 'start', 'end'],
@@ -120,9 +120,229 @@ router.get('/promotion', (req, res, next) => {
 })
 ////////////////////
 
+//////////Get All Promotion With Condition (Search By Keyword)
+//sử dụng localhost:3000/customer/search?keyword=... trong đó keyword là từ khóa cần tìm
+router.get('/search', (req, res, next) => {
+    let query = req.query.keyword
+    promotion.getAll({
+        attributes: ['id', 'title', 'description', 'start', 'end'],
+        include: [
+            {
+                attributes: ['quantity', 'balanceQty'],
+                model: models.Detail,
+                include: [{
+                    attributes: ['id', 'title', 'description', 'value'],
+                    model: models.Voucher
+                }]
+            },
+            {
+                attributes: ['state'],
+                model: models.Status,
+                where: { state: 'Accepted' }
+            },
+            {
+                attributes: ['id', 'title'],
+                model: models.Game,
+            },
+            {
+                attributes: ['id', 'address', 'name'],
+                model: models.Partner,
+                include: [{
+                    attributes: ['type'],
+                    model: models.Category
+                }]
+            }
+        ],
+        where: {
+            [Op.and]: [
+                { isDeleted: false },
+                { title: { [Op.iLike]: `%${query}%` } }
+            ]
+        }
+    })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                parent.Details.forEach(child => {
+                    let voucher = child.dataValues.Voucher
+                    child.dataValues.Voucher = voucher.dataValues
+                    arr.push(child.dataValues)
+                })
+                parent.Details = arr
+            })
+            return promotions
+        })
+        .then(promotions => {
+            promotions.forEach(parent => {
+                let status = parent.Status.dataValues.state
+                let game = parent.Game.dataValues
+                let partner = parent.Partner.dataValues
+                let category = partner.Category.dataValues.type
+                parent.Status = status
+                parent.Game = game
+                parent.Partner = partner
+                parent.Partner.Category = category
+            })
+            return promotions
+        })
+        .then(promotions => {
+            res.json({
+                success: true,
+                message: null,
+                data: promotions
+            })
+        })
+        .catch(error => next(error))
+})
+////////////////////
+
+//////////Get All Promotion With Condition (Search By Type)
+//sử dụng localhost:3000/customer/type?keyword=... trong đó keyword là type của partner
+router.get('/type', (req, res, next) => {
+    let query = req.query.keyword
+    promotion.getAll({
+        attributes: ['id', 'title', 'description', 'start', 'end'],
+        include: [
+            {
+                attributes: ['quantity', 'balanceQty'],
+                model: models.Detail,
+                include: [{
+                    attributes: ['id', 'title', 'description', 'value'],
+                    model: models.Voucher
+                }]
+            },
+            {
+                attributes: ['state'],
+                model: models.Status,
+                where: { state: 'Accepted' }
+            },
+            {
+                attributes: ['id', 'title'],
+                model: models.Game,
+            },
+            {
+                attributes: ['id', 'address', 'name'],
+                model: models.Partner,
+                include: [{
+                    attributes: ['type'],
+                    model: models.Category,
+                    where: { type: query }
+                }],
+            }
+        ],
+        where: { isDeleted: false }
+    })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                parent.Details.forEach(child => {
+                    let voucher = child.dataValues.Voucher
+                    child.dataValues.Voucher = voucher.dataValues
+                    arr.push(child.dataValues)
+                })
+                parent.Details = arr
+            })
+            return promotions
+        })
+        .then(promotions => {
+            promotions.forEach(parent => {
+                let status = parent.Status.dataValues.state
+                let game = parent.Game.dataValues
+                let partner = parent.Partner == null ? null : parent.Partner.dataValues
+                parent.Status = status
+                parent.Game = game
+                parent.Partner = partner
+                if (partner != null) {
+                    let category = partner.Category.dataValues.type
+                    parent.Partner.Category = category
+                }
+            })
+            return promotions.filter(element => element.Partner != null)
+        })
+        .then(promotions => {
+            res.json({
+                success: true,
+                message: null,
+                data: promotions
+            })
+        })
+        .catch(error => next(error))
+})
+////////////////////
+
+//////////Get All Promotion With Condition (Search By Time)
+router.get('/latest', (req, res, next) => {
+    promotion.getAll({
+        attributes: ['id', 'title', 'description', 'start', 'end'],
+        include: [
+            {
+                attributes: ['quantity', 'balanceQty'],
+                model: models.Detail,
+                include: [{
+                    attributes: ['id', 'title', 'description', 'value'],
+                    model: models.Voucher
+                }]
+            },
+            {
+                attributes: ['state'],
+                model: models.Status,
+                where: { state: 'Accepted' }
+            },
+            {
+                attributes: ['id', 'title'],
+                model: models.Game,
+            },
+            {
+                attributes: ['id', 'address', 'name'],
+                model: models.Partner,
+                include: [{
+                    attributes: ['type'],
+                    model: models.Category
+                }]
+            }
+        ],
+        where: { isDeleted: false },
+        order: [['start', 'DESC']]
+    })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                parent.Details.forEach(child => {
+                    let voucher = child.dataValues.Voucher
+                    child.dataValues.Voucher = voucher.dataValues
+                    arr.push(child.dataValues)
+                })
+                parent.Details = arr
+            })
+            return promotions
+        })
+        .then(promotions => {
+            promotions.forEach(parent => {
+                let status = parent.Status.dataValues.state
+                let game = parent.Game.dataValues
+                let partner = parent.Partner.dataValues
+                let category = partner.Category.dataValues.type
+                parent.Status = status
+                parent.Game = game
+                parent.Partner = partner
+                parent.Partner.Category = category
+            })
+            return promotions
+        })
+        .then(promotions => {
+            res.json({
+                success: true,
+                message: null,
+                data: promotions
+            })
+        })
+        .catch(error => next(error))
+})
+////////////////////
+
 //////////Get All Category
 router.get('/category', (req, res, next) => {
-    category.getAll()
+    category.getAll({ order: [['id', 'ASC']] })
         .then(data => {
             res.json({
                 success: true,
@@ -134,18 +354,18 @@ router.get('/category', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Voucher's Customer When Customer Wins The Game
-//sử dụng localhost:3000/customer/prize?id=... trong đó id là customerID
-router.get('/prize', (req, res, next) => {
+//////////Get All Reward's Customer When Customer Wins The Game
+//sử dụng localhost:3000/customer/reward?id=... trong đó id là customerID
+router.get('/reward', (req, res, next) => {
     let date = new Date()
-    if(req.query.id){
+    if (req.query.id) {
         let query = req.query.id
-        activity.getAll({
+        reward.getAll({
             where: {
                 [Op.and]: [
                     { expDate: { [Op.gte]: date } },
                     { isUsed: false },
-                    { customerID : query }
+                    { customerID: query }
                 ]
             }
         })
@@ -157,7 +377,7 @@ router.get('/prize', (req, res, next) => {
                 })
             })
             .catch(error => next(error))
-    }else{
+    } else {
         res.status(406).json({
             success: false,
             message: 'Incorrect method'
@@ -166,30 +386,7 @@ router.get('/prize', (req, res, next) => {
 })
 ////////////////////
 
-//////////Insert Participation
-//Dùng để ghi data của participation với đầu vào :
-//==>{
-// customerId : 1 //int
-// promotionID : 1, //int
-//}
-router.post('/join', (req, res, next) => {
-    let body = req.body
-    body.createdAt = Sequelize.literal('NOW()')
-    body.updatedAt = Sequelize.literal('NOW()')
-    participation.insertData(body)
-        .then(result => {
-            if (result) {
-                res.json({
-                    success: true,
-                    message: null
-                })
-            }
-        })
-        .catch(error => next(error))
-})
-/////////////////////
-
-//////////Insert Voucher When Customer Wins The Game
+//////////Insert Reward When Customer Wins The Game
 //Dùng để ghi data của customer khi nhận được voucher với đầu vào :
 //==>{
 // expDate : "2023-12-12" //string
@@ -202,7 +399,7 @@ router.post('/reward', (req, res, next) => {
     body.isUsed = false
     body.createdAt = Sequelize.literal('NOW()')
     body.updatedAt = Sequelize.literal('NOW()')
-    activity.insertData(body)
+    reward.insertData(body)
         .then(result => {
             if (result) {
                 console.log('Insert successful')
@@ -247,14 +444,15 @@ router.post('/reward', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+/////////////////////
 
-//////////Update Voucher When Customer Receives From Another Customer
+//////////Update Reward When Customer Receives From Another Customer
 //Dùng để cập nhật data của customer khi nhận được voucher từ customer khác với đầu vào :
 //==>{
 // email : "test@gmail.com" //string
-// activityID : 1 //int
+// rewardID : 1 //int
 //}
-router.post('/gift', (req, res, next) => {
+router.put('/reward', (req, res, next) => {
     let body = req.body
     customer.getOne({
         where: {
@@ -271,7 +469,7 @@ router.post('/gift', (req, res, next) => {
                     message: "Not found customer"
                 })
             } else {
-                activity.updateData({ customerID: data.id }, { where: { id: body.activityID } })
+                reward.updateData({ customerID: data.id }, { where: { id: body.rewardID } })
                     .then(result => {
                         if (result) {
                             res.json({
@@ -281,7 +479,7 @@ router.post('/gift', (req, res, next) => {
                         } else {
                             res.status(400).json({
                                 success: false,
-                                message: `Update unsuccessful in activityID ${body.activityID}`
+                                message: `Update unsuccessful in rewardID ${body.rewardID}`
                             })
                         }
                     })
@@ -290,6 +488,29 @@ router.post('/gift', (req, res, next) => {
         })
         .catch(error => next(error))
 })
+/////////////////////
 
+//////////Insert reward's Customer When Customer Joins The Promotion
+//Dùng để ghi data của participation với đầu vào :
+//==>{
+// customerId : 1 //int
+// promotionID : 1, //int
+//}
+router.post('/join', (req, res, next) => {
+    let body = req.body
+    body.createdAt = Sequelize.literal('NOW()')
+    body.updatedAt = Sequelize.literal('NOW()')
+    participation.insertData(body)
+        .then(result => {
+            if (result) {
+                res.json({
+                    success: true,
+                    message: null
+                })
+            }
+        })
+        .catch(error => next(error))
+})
+/////////////////////
 
 module.exports = router

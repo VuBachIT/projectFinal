@@ -10,7 +10,7 @@ class Admin{
                 response.forEach(element => {
                     data.push(element.dataValues)
                 });
-                resolve(data.sort((a,b) => {return a.id - b.id}))
+                resolve(data)
             })
             .catch(error =>reject(new Error(error)))
         }) 
