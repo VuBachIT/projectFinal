@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+let fetch = require('node-fetch')
 let express = require('express');
 let bodyParser = require('body-parser')
 let Sequelize = require('sequelize')
@@ -28,11 +29,23 @@ app.get('/sync', (req, res) => {
     })
 })
 
-app.use('/data',require('./routes/dataRoute')) //Chỉ dùng khi thêm dữ liệu
+// app.get('/test', (req, res) => {
+//     fetch(`https://api.geoapify.com/v1/geocode/search?housenumber=125&street=Bui%20Dinh%20Tuy&city=Ho%20Chi%20Minh%20City&country=Vietnam&format=json&apiKey=554ca114825944d58808302cf431a94b`)
+//         .then(response => response.json())
+//         .then(data => {
+//             console.log(data)
+//             res.send('Test')
+//         })
+//         .catch(error => {
+//             console.log(error)
+//         })
+// })
+
+app.use('/data', require('./routes/dataRoute')) //Chỉ dùng khi thêm dữ liệu
 app.use('/user', require('./routes/userRoute'))
 app.use('/partner', require('./routes/partnerRoute'))
 app.use('/admin', require('./routes/adminRoute'))
-app.use('/customer',require('./routes/customerRoute'))
+app.use('/customer', require('./routes/customerRoute'))
 
 app.set('port', process.env.PORT || 3000);
 app.listen(app.get('port'), () => {

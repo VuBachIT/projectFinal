@@ -340,6 +340,10 @@ router.get('/latest', (req, res, next) => {
 })
 ////////////////////
 
+router.get('/nearby', (req, res, next) => {
+
+})
+
 //////////Get All Category
 router.get('/category', (req, res, next) => {
     category.getAll({ order: [['id', 'ASC']] })
