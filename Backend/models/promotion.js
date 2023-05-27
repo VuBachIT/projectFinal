@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Promotion.hasMany(models.Participation,{foreignKey : 'promotionID'})
       Promotion.hasMany(models.Detail,{foreignKey : 'promotionID'})
+      Promotion.hasMany(models.Reward,{foreignKey : 'promotionID'})
       Promotion.belongsTo(models.Partner,{foreignKey : 'partnerID'})
       Promotion.belongsTo(models.Status,{foreignKey : 'statusID'})
       Promotion.belongsTo(models.Game,{foreignKey : 'gameID'})
@@ -17,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     start: DataTypes.DATEONLY,
     end: DataTypes.DATEONLY,
+    applyFor : DataTypes.ARRAY(DataTypes.INTEGER),
     isDeleted : DataTypes.BOOLEAN
   }, {
     sequelize,

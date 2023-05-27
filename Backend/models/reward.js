@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
         Reward.belongsTo(models.Customer,{foreignKey : 'customerID'})
         Reward.belongsTo(models.Voucher,{foreignKey : 'voucherID'})
+        Reward.belongsTo(models.Promotion,{foreignKey : 'promotionID'})
     }
   }
   Reward.init({
