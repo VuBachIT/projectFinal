@@ -52,7 +52,13 @@ router.put('/', (req, res, next) => {
 ////////////////////
 
 //////////Get All Promotion Which Have Status 'Accepted'
+//sử dụng localhost:3000/partner/promotion?id=...&search=...&type=...&latest=... 
+//trong đó search là từ khóa tìm kiếm, type là loại Category, latest là sort theo thời gian (nhập true nếu sử dụng)
+//search, type và latest trong URL là mục đích dùng tìm kiếm và lọc
 router.get('/promotion', (req, res, next) => {
+    let search = (req.query.search) ? { title: { [Op.iLike]: `%${req.query.search}%` } } : {}
+    let type = (req.query.type) ? { state: req.query.type } : {}
+    let latest = (req.query.latest == 'true') ? [['start', 'DESC']] : [['id', 'ASC']]
     promotion.getAll({
         attributes: ['id', 'title', 'description', 'start', 'end'],
         include: [
@@ -74,235 +80,22 @@ router.get('/promotion', (req, res, next) => {
                 model: models.Game,
             },
             {
-                attributes: ['id', 'address', 'name'],
+                attributes: ['id', 'name'],
                 model: models.Partner,
                 include: [{
                     attributes: ['type'],
-                    model: models.Category
-                }]
-            }
-        ],
-        where: { isDeleted: false }
-    })
-        .then(promotions => {
-            let arr = []
-            promotions.forEach(parent => {
-                parent.Details.forEach(child => {
-                    let voucher = child.dataValues.Voucher
-                    child.dataValues.Voucher = voucher.dataValues
-                    arr.push(child.dataValues)
-                })
-                parent.Details = arr
-            })
-            return promotions
-        })
-        .then(promotions => {
-            promotions.forEach(parent => {
-                let status = parent.Status.dataValues.state
-                let game = parent.Game.dataValues
-                let partner = parent.Partner.dataValues
-                let category = partner.Category.dataValues.type
-                parent.Status = status
-                parent.Game = game
-                parent.Partner = partner
-                parent.Partner.Category = category
-            })
-            return promotions
-        })
-        .then(promotions => {
-            res.json({
-                success: true,
-                message: null,
-                data: promotions
-            })
-        })
-        .catch(error => next(error))
-})
-////////////////////
-
-//////////Get All Promotion With Condition (Search By Keyword)
-//sử dụng localhost:3000/customer/search?keyword=... trong đó keyword là từ khóa cần tìm
-router.get('/search', (req, res, next) => {
-    let query = req.query.keyword
-    promotion.getAll({
-        attributes: ['id', 'title', 'description', 'start', 'end'],
-        include: [
-            {
-                attributes: ['quantity', 'balanceQty'],
-                model: models.Detail,
-                include: [{
-                    attributes: ['id', 'title', 'description', 'value'],
-                    model: models.Voucher
-                }]
-            },
-            {
-                attributes: ['state'],
-                model: models.Status,
-                where: { state: 'Accepted' }
-            },
-            {
-                attributes: ['id', 'title'],
-                model: models.Game,
-            },
-            {
-                attributes: ['id', 'address', 'name'],
-                model: models.Partner,
-                include: [{
-                    attributes: ['type'],
-                    model: models.Category
+                    model: models.Category,
+                    where: type
                 }]
             }
         ],
         where: {
             [Op.and]: [
                 { isDeleted: false },
-                { title: { [Op.iLike]: `%${query}%` } }
+                search
             ]
-        }
-    })
-        .then(promotions => {
-            let arr = []
-            promotions.forEach(parent => {
-                parent.Details.forEach(child => {
-                    let voucher = child.dataValues.Voucher
-                    child.dataValues.Voucher = voucher.dataValues
-                    arr.push(child.dataValues)
-                })
-                parent.Details = arr
-            })
-            return promotions
-        })
-        .then(promotions => {
-            promotions.forEach(parent => {
-                let status = parent.Status.dataValues.state
-                let game = parent.Game.dataValues
-                let partner = parent.Partner.dataValues
-                let category = partner.Category.dataValues.type
-                parent.Status = status
-                parent.Game = game
-                parent.Partner = partner
-                parent.Partner.Category = category
-            })
-            return promotions
-        })
-        .then(promotions => {
-            res.json({
-                success: true,
-                message: null,
-                data: promotions
-            })
-        })
-        .catch(error => next(error))
-})
-////////////////////
-
-//////////Get All Promotion With Condition (Search By Type)
-//sử dụng localhost:3000/customer/type?keyword=... trong đó keyword là type của partner
-router.get('/type', (req, res, next) => {
-    let query = req.query.keyword
-    promotion.getAll({
-        attributes: ['id', 'title', 'description', 'start', 'end'],
-        include: [
-            {
-                attributes: ['quantity', 'balanceQty'],
-                model: models.Detail,
-                include: [{
-                    attributes: ['id', 'title', 'description', 'value'],
-                    model: models.Voucher
-                }]
-            },
-            {
-                attributes: ['state'],
-                model: models.Status,
-                where: { state: 'Accepted' }
-            },
-            {
-                attributes: ['id', 'title'],
-                model: models.Game,
-            },
-            {
-                attributes: ['id', 'address', 'name'],
-                model: models.Partner,
-                include: [{
-                    attributes: ['type'],
-                    model: models.Category,
-                    where: { type: query }
-                }],
-            }
-        ],
-        where: { isDeleted: false }
-    })
-        .then(promotions => {
-            let arr = []
-            promotions.forEach(parent => {
-                parent.Details.forEach(child => {
-                    let voucher = child.dataValues.Voucher
-                    child.dataValues.Voucher = voucher.dataValues
-                    arr.push(child.dataValues)
-                })
-                parent.Details = arr
-            })
-            return promotions
-        })
-        .then(promotions => {
-            promotions.forEach(parent => {
-                let status = parent.Status.dataValues.state
-                let game = parent.Game.dataValues
-                let partner = parent.Partner == null ? null : parent.Partner.dataValues
-                parent.Status = status
-                parent.Game = game
-                parent.Partner = partner
-                if (partner != null) {
-                    let category = partner.Category.dataValues.type
-                    parent.Partner.Category = category
-                }
-            })
-            return promotions.filter(element => element.Partner != null)
-        })
-        .then(promotions => {
-            res.json({
-                success: true,
-                message: null,
-                data: promotions
-            })
-        })
-        .catch(error => next(error))
-})
-////////////////////
-
-//////////Get All Promotion With Condition (Search By Time)
-router.get('/latest', (req, res, next) => {
-    promotion.getAll({
-        attributes: ['id', 'title', 'description', 'start', 'end'],
-        include: [
-            {
-                attributes: ['quantity', 'balanceQty'],
-                model: models.Detail,
-                include: [{
-                    attributes: ['id', 'title', 'description', 'value'],
-                    model: models.Voucher
-                }]
-            },
-            {
-                attributes: ['state'],
-                model: models.Status,
-                where: { state: 'Accepted' }
-            },
-            {
-                attributes: ['id', 'title'],
-                model: models.Game,
-            },
-            {
-                attributes: ['id', 'address', 'name'],
-                model: models.Partner,
-                include: [{
-                    attributes: ['type'],
-                    model: models.Category
-                }]
-            }
-        ],
-        where: { isDeleted: false },
-        order: [['start', 'DESC']]
+        },
+        order: latest
     })
         .then(promotions => {
             let arr = []

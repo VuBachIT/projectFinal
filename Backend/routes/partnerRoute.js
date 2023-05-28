@@ -92,7 +92,7 @@ router.get('/game', (req, res, next) => {
 router.get('/promotion', (req, res, next) => {
     if (req.query.id) {
         let query = req.query.id
-        let search = (req.query.search) ? { [Op.iLike]: `%${req.query.search}%` } : {}
+        let search = (req.query.search) ? { title: { [Op.iLike]: `%${req.query.search}%` } } : {}
         let type = (req.query.type) ? { state: req.query.type } : {}
         promotion.getAll({
             attributes: ['id', 'title', 'description', 'start', 'end', 'applyFor'],
@@ -126,7 +126,7 @@ router.get('/promotion', (req, res, next) => {
                 [Op.and]: [
                     { partnerID: query },
                     { isDeleted: false },
-                    { title: search }
+                    search
                 ]
             },
             order: [['id', 'ASC']]
@@ -508,6 +508,7 @@ router.delete('/store', (req, res, next) => {
         })
     }
 })
+////////////////////
 
 //////////Update Reward When Customer Uses Reward In Store (isUsed)
 //sử dụng localhost:3000/partner/use?id=../ trong id là rewardID
@@ -529,7 +530,7 @@ router.put('/use', (req, res, next) => {
                 }
             })
             .catch(error => next(error))
-    }else{
+    } else {
         res.status(406).json({
             success: false,
             message: 'Incorrect method'
