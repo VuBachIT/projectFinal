@@ -52,7 +52,7 @@ router.put('/', (req, res, next) => {
 ////////////////////
 
 //////////Get All Promotion Which Have Status 'Accepted'
-//sử dụng localhost:3000/partner/promotion?id=...&search=...&type=...&latest=... 
+//sử dụng localhost:3000/customer/promotion?id=...&search=...&type=...&latest=... 
 //trong đó search là từ khóa tìm kiếm, type là loại Category, latest là sort theo thời gian (nhập true nếu sử dụng)
 //search, type và latest trong URL là mục đích dùng tìm kiếm và lọc
 router.get('/promotion', (req, res, next) => {
@@ -82,11 +82,17 @@ router.get('/promotion', (req, res, next) => {
             {
                 attributes: ['id', 'name'],
                 model: models.Partner,
-                include: [{
-                    attributes: ['type'],
-                    model: models.Category,
-                    where: type
-                }]
+                include: [
+                    {
+                        attributes: ['type'],
+                        model: models.Category,
+                        where: type
+                    },
+                    {
+                        attributes: ['name', 'address', 'lat', 'long'],
+                        model: models.Store
+                    }
+                ]
             }
         ],
         where: {
@@ -106,6 +112,7 @@ router.get('/promotion', (req, res, next) => {
                     arr.push(child.dataValues)
                 })
                 parent.Details = arr
+                arr = []
             })
             return promotions
         })
@@ -113,12 +120,23 @@ router.get('/promotion', (req, res, next) => {
             promotions.forEach(parent => {
                 let status = parent.Status.dataValues.state
                 let game = parent.Game.dataValues
-                let partner = parent.Partner.dataValues
-                let category = partner.Category.dataValues.type
                 parent.Status = status
                 parent.Game = game
+            })
+            return promotions
+        })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                let partner = parent.Partner.dataValues
+                let category = partner.Category.dataValues.type
                 parent.Partner = partner
                 parent.Partner.Category = category
+                parent.Partner.Stores.forEach(child => {
+                    arr.push(child.dataValues)
+                })
+                parent.Partner.Stores = arr
+                arr = []
             })
             return promotions
         })
@@ -133,9 +151,116 @@ router.get('/promotion', (req, res, next) => {
 })
 ////////////////////
 
+//////////Get All Promotion Near Customer's Location
+//sử dụng localhost:3000/customer/nearby?lat=...&long=... trong đó lat và long là kinh độ và vĩ độ của customer 
 router.get('/nearby', (req, res, next) => {
+    if (req.query.lat && req.query.long) {
+        let lat = req.query.lat
+        let long = req.query.long
+        let arr = req.query.arr
+        console.log(arr)
+        let formula = `(
+            6371 * acos(
+                cos(radians(${lat}))
+                * cos(radians(lat))
+                * cos(radians(long) - radians(${long}))
+                + sin(radians(${lat})) * sin(radians(lat))
+            )
+        )`
+        promotion.getAll({
+            attributes: ['id', 'title', 'description', 'start', 'end', 'applyFor'],
+            include: [
+                {
+                    attributes: ['quantity', 'balanceQty'],
+                    model: models.Detail,
+                    include: [{
+                        attributes: ['id', 'title', 'description', 'value'],
+                        model: models.Voucher
+                    }]
+                },
+                {
+                    attributes: ['state'],
+                    model: models.Status,
+                    where: { state: 'Accepted' }
+                },
+                {
+                    attributes: ['id', 'title'],
+                    model: models.Game,
+                },
+                {
+                    attributes: ['id', 'name'],
+                    model: models.Partner,
+                    include: [
+                        {
+                            attributes: ['type'],
+                            model: models.Category,
+                        },
+                        {
+                            attributes: ['name', 'address', [Sequelize.literal(formula), 'distance']],
+                            model: models.Store,
+                            order: [Sequelize.col('distance'), 'ASC'],
+                        }
+                    ]
+                }
+            ],
+            where: { isDeleted: false }
+        })
+            .then(promotions => {
+                let arr = []
+                promotions.forEach(parent => {
+                    parent.Details.forEach(child => {
+                        let voucher = child.dataValues.Voucher
+                        child.dataValues.Voucher = voucher.dataValues
+                        arr.push(child.dataValues)
+                    })
+                    parent.Details = arr
+                    arr = []
+                })
+                return promotions
+            })
+            .then(promotions => {
+                promotions.forEach(parent => {
+                    let status = parent.Status.dataValues.state
+                    let game = parent.Game.dataValues
+                    parent.Status = status
+                    parent.Game = game
+                })
+                return promotions
+            })
+            .then(promotions => {
+                let arr = []
+                promotions.forEach(parent => {
+                    let partner = parent.Partner.dataValues
+                    let category = partner.Category.dataValues.type
+                    parent.Partner = partner
+                    parent.Partner.Category = category
+                    parent.Partner.Stores.forEach(child => {
+                        arr.push(child.dataValues)
+                    })
+                    parent.Partner.Stores = arr
+                    parent.Nearby = arr[0]
+                    parent.Distance = arr[0].distance
+                    arr = []
+                })
+                return promotions.sort((a, b) => { return a.Distance - b.Distance })
+            })
+            .then(promotions => {
+                res.json({
+                    success: true,
+                    message: null,
+                    data: promotions
+                })
+            })
+            .catch(error => next(error))
 
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
 })
+////////////////////
 
 //////////Get All Category
 router.get('/category', (req, res, next) => {

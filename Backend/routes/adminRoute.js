@@ -43,6 +43,20 @@ router.get('/promotion', (req, res, next) => {
             {
                 attributes: ['id', 'title'],
                 model: models.Game,
+            },
+            {
+                attributes: ['id', 'name'],
+                model: models.Partner,
+                include: [
+                    {
+                        attributes: ['type'],
+                        model: models.Category,
+                    },
+                    {
+                        attributes: ['name', 'address', 'lat', 'long'],
+                        model: models.Store
+                    }
+                ]
             }
         ],
         where: { isDeleted: false },
@@ -57,6 +71,7 @@ router.get('/promotion', (req, res, next) => {
                     arr.push(child.dataValues)
                 })
                 parent.Details = arr
+                arr = []
             })
             return promotions
         })
@@ -66,6 +81,21 @@ router.get('/promotion', (req, res, next) => {
                 let game = parent.Game.dataValues
                 parent.Status = status
                 parent.Game = game
+            })
+            return promotions
+        })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                let partner = parent.Partner.dataValues
+                let category = partner.Category.dataValues.type
+                parent.Partner = partner
+                parent.Partner.Category = category
+                parent.Partner.Stores.forEach(child => {
+                    arr.push(child.dataValues)
+                })
+                parent.Partner.Stores = arr
+                arr = []
             })
             return promotions
         })

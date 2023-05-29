@@ -5,8 +5,8 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Detail extends Model {
     static associate(models) {
-      Detail.belongsTo(models.Voucher,{foreignKey : 'voucherID'})
-      Detail.belongsTo(models.Promotion,{foreignKey : 'promotionID'})
+      Detail.belongsTo(models.Voucher, { foreignKey: 'voucherID' })
+      Detail.belongsTo(models.Promotion, { foreignKey: 'promotionID' })
     }
   }
   Detail.init({

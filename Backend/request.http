@@ -18,7 +18,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/customer/promotion?search=B
+GET http://localhost:3000/customer/nearby?lat=10.78098595602969&long=106.67533830568453
 
 ###
 

@@ -140,6 +140,7 @@ router.get('/promotion', (req, res, next) => {
                         arr.push(child.dataValues)
                     })
                     parent.Details = arr
+                    arr = []
                 })
                 return promotions
             })
@@ -150,6 +151,7 @@ router.get('/promotion', (req, res, next) => {
                         arr.push(child.dataValues)
                     })
                     parent.Rewards = arr
+                    arr = []
                 })
                 return promotions
             })
@@ -222,6 +224,7 @@ router.get('/promotion/:id', (req, res, next) => {
                         element.dataValues.Voucher = voucher.dataValues
                         arr.push(element.dataValues)
                     })
+                    data.Details = arr
                 }
                 return data
             })
@@ -459,7 +462,9 @@ router.post('/store', (req, res, next) => {
 //Dùng để ghi data của store với đầu vào :
 //==>{
 // name : "Test", //string
-// address : 'Test', //string ==> lưu ý nếu không chỉnh sửa address thì không thêm cái này
+// address : 'Test', //string
+// lat : 10,0606, //float
+// long : 10,0707 //float
 // }
 router.put('/store', (req, res, next) => {
     let body = req.body
