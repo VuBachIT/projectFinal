@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     start: DataTypes.DATEONLY,
     end: DataTypes.DATEONLY,
-    applyFor : DataTypes.ARRAY(DataTypes.INTEGER),
     isDeleted : DataTypes.BOOLEAN
   }, {
     sequelize,

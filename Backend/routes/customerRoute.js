@@ -90,7 +90,8 @@ router.get('/promotion', (req, res, next) => {
                     },
                     {
                         attributes: ['name', 'address', 'lat', 'long'],
-                        model: models.Store
+                        model: models.Store,
+                        where: { isDeleted: false }
                     }
                 ]
             }
@@ -168,7 +169,7 @@ router.get('/nearby', (req, res, next) => {
             )
         )`
         promotion.getAll({
-            attributes: ['id', 'title', 'description', 'start', 'end', 'applyFor'],
+            attributes: ['id', 'title', 'description', 'start', 'end'],
             include: [
                 {
                     attributes: ['quantity', 'balanceQty'],
@@ -198,6 +199,7 @@ router.get('/nearby', (req, res, next) => {
                         {
                             attributes: ['name', 'address', [Sequelize.literal(formula), 'distance']],
                             model: models.Store,
+                            where: { isDeleted: false },
                             order: [Sequelize.col('distance'), 'ASC'],
                         }
                     ]
@@ -253,6 +255,112 @@ router.get('/nearby', (req, res, next) => {
             })
             .catch(error => next(error))
 
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+////////////////////
+
+//////////Get All Promotion By Location
+//sử dụng localhost:3000/customer/location?search=... trong đó search từ khóa tìm kiếm địa chỉ
+router.get('/location', (req, res, next) => {
+    if (req.query.search) {
+        let search = { address: { [Op.iLike]: `%${req.query.search}%` } }
+        promotion.getAll({
+            attributes: ['id', 'title', 'description', 'start', 'end'],
+            include: [
+                {
+                    attributes: ['quantity', 'balanceQty'],
+                    model: models.Detail,
+                    include: [{
+                        attributes: ['id', 'title', 'description', 'value'],
+                        model: models.Voucher
+                    }]
+                },
+                {
+                    attributes: ['state'],
+                    model: models.Status,
+                    where: { state: 'Accepted' }
+                },
+                {
+                    attributes: ['id', 'title'],
+                    model: models.Game,
+                },
+                {
+                    attributes: ['id', 'name'],
+                    model: models.Partner,
+                    include: [
+                        {
+                            attributes: ['type'],
+                            model: models.Category,
+                        },
+                        {
+                            attributes: ['name', 'address'],
+                            model: models.Store,
+                            where: {
+                                [Op.and]: [
+                                    { isDeleted: false },
+                                    search
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            where: { isDeleted: false }
+        })
+            .then(promotions => {
+                console.log(promotions)
+                let arr = []
+                promotions.forEach(parent => {
+                    console.log(parent)
+                    parent.Details.forEach(child => {
+                        let voucher = child.dataValues.Voucher
+                        child.dataValues.Voucher = voucher.dataValues
+                        arr.push(child.dataValues)
+                    })
+                    parent.Details = arr
+                    arr = []
+                })
+                return promotions
+            })
+            .then(promotions => {
+                promotions.forEach(parent => {
+                    let status = parent.Status.dataValues.state
+                    let game = parent.Game.dataValues
+                    parent.Status = status
+                    parent.Game = game
+                })
+                return promotions
+            })
+            .then(promotions => {
+                let arr = []
+                promotions.forEach(parent => {
+                    let partner = (parent.Partner) ? parent.Partner.dataValues : null
+                    if (partner) {
+                        let category = partner.Category.dataValues.type
+                        parent.Partner = partner
+                        parent.Partner.Category = category
+                        parent.Partner.Stores.forEach(child => {
+                            arr.push(child.dataValues)
+                        })
+                        parent.Partner.Stores = arr
+                        arr = []
+                    }
+                })
+                return promotions.filter(element => element.Partner != null)
+            })
+            .then(promotions => {
+                res.json({
+                    success: true,
+                    message: null,
+                    data: promotions
+                })
+            })
+            .catch(error => next(error))
     } else {
         res.status(406).json({
             success: false,

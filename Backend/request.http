@@ -22,6 +22,10 @@ GET http://localhost:3000/customer/nearby?lat=10.78098595602969&long=106.6753383
 
 ###
 
+GET http://localhost:3000/customer/location?search=1
+
+###
+
 POST http://localhost:3000/customer/reward
 Content-Type: application/json
 
@@ -45,4 +49,7 @@ Content-Type: application/json
     "email" : "bach_thegreat@gmail.com",
     "rewardID" : 5,
 }
+
+###
+GET http://localhost:3000/partner/promotion?id=1&search=1
 

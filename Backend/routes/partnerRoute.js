@@ -95,7 +95,7 @@ router.get('/promotion', (req, res, next) => {
         let search = (req.query.search) ? { title: { [Op.iLike]: `%${req.query.search}%` } } : {}
         let type = (req.query.type) ? { state: req.query.type } : {}
         promotion.getAll({
-            attributes: ['id', 'title', 'description', 'start', 'end', 'applyFor'],
+            attributes: ['id', 'title', 'description', 'start', 'end'],
             include: [
                 {
                     attributes: ['quantity', 'balanceQty'],
