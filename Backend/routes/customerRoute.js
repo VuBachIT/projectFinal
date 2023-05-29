@@ -14,7 +14,7 @@ let category = new Category()
 let participation = new Participation()
 let customer = new Customer()
 let reward = new Reward()
-let detail = new Detail
+let detail = new Detail()
 
 //////////Test Route
 router.get('/', (req, res, next) => {
