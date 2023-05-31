@@ -118,7 +118,10 @@ router.post('/signin', (req, res, next) => {
 // email : "Test", //string
 // password : 'Test', //string
 // phoneNumber : 'Test, //string
-// name : 'Test' //string
+// name : 'Test', //string
+// address : ''Test, //string
+// lat : 106.11, //float
+// long : 70.11 //float
 // }
 router.post('/signup', (req, res, next) => {
     let body = req.body

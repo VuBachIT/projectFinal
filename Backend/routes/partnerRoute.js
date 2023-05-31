@@ -512,6 +512,7 @@ router.get('/store/:id', (req, res, next) => {
 //==>{
 // name : "Test", //string
 // address : 'Test', //string
+// partnerID : 1 //int
 // }
 router.post('/store', (req, res, next) => {
     let body = req.body

@@ -9,12 +9,14 @@ let Customer = require('../controllers/customerClass')
 let Admin = require('../controllers/adminClass')
 let Game = require('../controllers/gameClass')
 let Voucher = require('../controllers/voucherClass')
+let Status = require('../controllers/statusClass')
 let promotion = new Promotion()
 let partner = new Partner()
 let customer = new Customer()
 let admin = new Admin()
 let game = new Game()
 let voucher = new Voucher()
+let status = new Status()
 
 //////////Test Route
 router.get('/', (req, res, next) => {
@@ -22,7 +24,23 @@ router.get('/', (req, res, next) => {
 })
 ////////////////////
 
-//////////Get All Promotions Which Have Status 'Pending'
+//////////Get All Status
+router.get('/status', (req, res, next) => {
+    status.getAll({
+        order: [['id', 'ASC']]
+    })
+        .then(data => {
+            res.json({
+                success: true,
+                message: null,
+                data: data
+            })
+        })
+        .catch(error => next(error))
+})
+////////////////////
+
+//////////Get All Promotion
 router.get('/promotion', (req, res, next) => {
     promotion.getAll({
         attributes: ['id', 'title', 'description', 'start', 'end'],
@@ -37,8 +55,7 @@ router.get('/promotion', (req, res, next) => {
             },
             {
                 attributes: ['state'],
-                model: models.Status,
-                where: { state: 'Pending' }
+                model: models.Status
             },
             {
                 attributes: ['id', 'title'],
@@ -105,6 +122,32 @@ router.get('/promotion', (req, res, next) => {
                 message: null,
                 data: promotions
             })
+        })
+        .catch(error => next(error))
+})
+////////////////////
+
+//////////Update Promotion (Pending -> Accepted or Rejected)
+//Dùng để cập nhật trạng thái của promotion (Pending -> Accepted hoặc Rejected) :
+//==>{
+// id : 1 //int
+// statusID : 3 //int
+//}
+router.put('/promotion', (req, res, next) => {
+    let body = req.body
+    promotion.updateData(body, { where: { id: body.id } })
+        .then(result => {
+            if (result) {
+                res.json({
+                    success: true,
+                    message: null
+                })
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: `Update unsuccessful in promotionID ${body.id}`
+                })
+            }
         })
         .catch(error => next(error))
 })
@@ -197,32 +240,63 @@ router.get('/account', (req, res, next) => {
 })
 ///////////////////
 
-//////////Get One Account (Partner)
-//sử dụng localhost:3000/admin/account/:id trong đó :id là partnerID
+//////////Get One Account (Partner,Customer)
+//sử dụng localhost:3000/admin/account/:id?type=... 
+//trong đó :id là partnerID hoặc customerID, type là loại tìm kiếm (partner, customer)
 router.get('/account/:id', (req, res, next) => {
-    if (!isNaN(req.params.id)) {
+    if (!isNaN(req.params.id) && req.query.type) {
         let param = req.params.id
-        partner.getOne({
-            where: {
-                [Op.and]: [
-                    { id: param },
-                    { isDeleted: false }
-                ]
-            }
-        }).then(data => {
-            if (data) {
-                res.json({
-                    success: true,
-                    message: null,
-                    data: data
-                })
-            } else {
-                res.status(404).json({
-                    success: false,
-                    message: `Not found id ${param}`
-                })
-            }
-        }).catch(error => next(error))
+        let type = req.query.type
+        if (type == 'partner') {
+            partner.getOne({
+                where: {
+                    [Op.and]: [
+                        { id: param },
+                        { isDeleted: false }
+                    ]
+                }
+            }).then(data => {
+                if (data) {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Not found id ${param}`
+                    })
+                }
+            }).catch(error => next(error))
+        } else if (type == 'customer') {
+            customer.getOne({
+                where: {
+                    [Op.and]: [
+                        { id: param },
+                        { isDeleted: false }
+                    ]
+                }
+            }).then(data => {
+                if (data) {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Not found id ${param}`
+                    })
+                }
+            }).catch(error => next(error))
+        } else {
+            res.status(406).json({
+                success: false,
+                message: 'Incorrect type'
+            })
+        }
     } else {
         res.status(406).json({
             success: false,
@@ -240,7 +314,6 @@ router.get('/account/:id', (req, res, next) => {
 // name : 'Test' //string
 // }
 router.post('/account', (req, res, next) => {
-    console.log(req.body)
     let body = req.body
     partner.getOne({ where: { email: body.email } })
         .then(data => {
@@ -266,6 +339,56 @@ router.post('/account', (req, res, next) => {
             }
         })
         .catch(error => next(error))
+})
+///////////////////
+
+//////////Update Account (Partner,Customer)
+//Dùng để cập nhật data (voucher, game) với đầu vào :
+//==>{
+// id : 1 //int
+//... ==> dữ liệu cần cập nhật
+// type : 'partner' //string ==> viết thường không hoa
+//}
+router.put('/account', (req, res, next) => {
+    let body = req.body
+    if (body.type == 'partner') {
+        partner.updateData(body, { where: { id: body.id } })
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null
+                    })
+                } else {
+                    res.status(400).json({
+                        success: false,
+                        message: `Update unsuccessful in partnerID ${body.id}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else if (body.type == 'customer') {
+        customer.updateData(body, { where: { id: body.id } })
+            .then(result => {
+                if (result) {
+                    res.json({
+                        success: true,
+                        message: null
+                    })
+                } else {
+                    res.status(400).json({
+                        success: false,
+                        message: `Update unsuccessful in customerID ${body.id}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect type'
+        })
+    }
 })
 ///////////////////
 
@@ -499,43 +622,11 @@ router.post('/feature', (req, res, next) => {
 //==>{
 // id : 1 //int
 //... ==> dữ liệu cần cập nhật
-// type : 'partner' //string ==> viết thường không hoa
+// type : 'game' //string ==> viết thường không hoa
 //}
 router.put('/feature', (req, res, next) => {
     let body = req.body
-    if (body.type == 'partner') {
-        partner.updateData(body, { where: { id: body.id } })
-            .then(result => {
-                if (result) {
-                    res.json({
-                        success: true,
-                        message: null
-                    })
-                } else {
-                    res.status(400).json({
-                        success: false,
-                        message: `Update unsuccessful in partnerID ${body.id}`
-                    })
-                }
-            })
-            .catch(error => next(error))
-    } else if (body.type == 'customer') {
-        customer.updateData(body, { where: { id: body.id } })
-            .then(result => {
-                if (result) {
-                    res.json({
-                        success: true,
-                        message: null
-                    })
-                } else {
-                    res.status(400).json({
-                        success: false,
-                        message: `Update unsuccessful in customerID ${body.id}`
-                    })
-                }
-            })
-            .catch(error => next(error))
-    } else if (body.type == 'game') {
+    if (body.type == 'game') {
         game.updateData(body, { where: { id: body.id } })
             .then(result => {
                 if (result) {
@@ -577,7 +668,7 @@ router.put('/feature', (req, res, next) => {
 ////////////////////
 
 //////////Delete Feature (Game, Voucher)
-//Dùng để xóa data (promotion, voucher, game) với đầu vào :
+//Dùng để xóa data (voucher, game) với đầu vào :
 //==>{
 // id : 1, //int
 // type : 'promotion', //string ==> viết thường không hoa

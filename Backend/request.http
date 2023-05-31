@@ -43,5 +43,6 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/partner/store/1
+
+GET http://localhost:3000/admin/account/4?type=partner
 
