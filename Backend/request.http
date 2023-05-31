@@ -44,5 +44,5 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/admin/account/4?type=partner
+GET http://localhost:3000/partner
 

@@ -343,7 +343,7 @@ router.post('/account', (req, res, next) => {
 ///////////////////
 
 //////////Update Account (Partner,Customer)
-//Dùng để cập nhật data (voucher, game) với đầu vào :
+//Dùng để cập nhật data (partner, customer) với đầu vào :
 //==>{
 // id : 1 //int
 //... ==> dữ liệu cần cập nhật

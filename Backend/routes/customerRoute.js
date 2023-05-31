@@ -23,8 +23,8 @@ router.get('/', (req, res, next) => {
 ////////////////////
 
 //////////Get One Customer
-//sử dụng localhost:3000/customer/:id trong đó :id là customerID
-router.get('/:id', (req, res, next) => {
+//sử dụng localhost:3000/customer/get/:id trong đó :id là customerID
+router.get('/get/:id', (req, res, next) => {
     if (!isNaN(req.params.id)) {
         let param = req.params.id
         customer.getOne({

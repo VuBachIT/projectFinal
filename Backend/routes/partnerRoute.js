@@ -16,7 +16,7 @@ let detail = new Detail()
 let game = new Game()
 let partner = new Partner()
 let store = new Store()
-let reward = new Reward
+let reward = new Reward()
 
 //////////Test Route
 router.get('/', (req, res, next) => {
@@ -25,8 +25,8 @@ router.get('/', (req, res, next) => {
 ////////////////////
 
 //////////Get One Partner
-//sử dụng localhost:3000/partner/:id trong đó :id là partnerID
-router.get('/:id', (req, res, next) => {
+//sử dụng localhost:3000/partner/get/:id trong đó :id là partnerID
+router.get('/get/:id', (req, res, next) => {
     if (!isNaN(req.params.id)) {
         let param = req.params.id
         partner.getOne({
@@ -512,7 +512,9 @@ router.get('/store/:id', (req, res, next) => {
 //==>{
 // name : "Test", //string
 // address : 'Test', //string
-// partnerID : 1 //int
+// partnerID : 1, //int
+// lat : 106.11, //float
+// long : 70.11 //float
 // }
 router.post('/store', (req, res, next) => {
     let body = req.body
