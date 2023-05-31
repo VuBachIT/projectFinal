@@ -434,6 +434,44 @@ router.get('/store', (req, res, next) => {
 })
 ////////////////////
 
+//////////Get One Store By StoreID
+//sử dụng localhost:3000/partner/store/:id trong :id là id của store
+//ví dụ localhost:3000/partner/store/1
+router.get('/store/:id', (req, res, next) => {
+    if (!isNaN(req.params.id)) {
+        let param = parseInt(req.params.id)
+        store.getOne({
+            where: {
+                [Op.and]: [
+                    { id: param },
+                    { isDeleted: false }
+                ]
+            }
+        })
+            .then(data => {
+                if (data) {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Not found id ${param}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+////////////////////
+
 //////////Insert Store
 //Dùng để ghi data của store với đầu vào :
 //==>{
@@ -461,6 +499,7 @@ router.post('/store', (req, res, next) => {
 //////////Update Store
 //Dùng để ghi data của store với đầu vào :
 //==>{
+// id : 1 ,//int
 // name : "Test", //string
 // address : 'Test', //string
 // lat : 10,0606, //float
