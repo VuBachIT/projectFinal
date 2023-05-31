@@ -22,6 +22,41 @@ router.get('/', (req, res, next) => {
 })
 ////////////////////
 
+//////////Get One Customer
+//sử dụng localhost:3000/customer/:id trong đó :id là customerID
+router.get('/:id', (req, res, next) => {
+    if (!isNaN(req.params.id)) {
+        let param = req.params.id
+        customer.getOne({
+            where: {
+                [Op.and]: [
+                    { id: param },
+                    { isDeleted: false }
+                ]
+            }
+        }).then(data => {
+            if (data) {
+                res.json({
+                    success: true,
+                    message: null,
+                    data: data
+                })
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: `Not found id ${param}`
+                })
+            }
+        }).catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+////////////////////
+
 //////////Update Customer
 //Dùng để cập nhật data của customer với đầu vào :
 //==>{
@@ -29,7 +64,9 @@ router.get('/', (req, res, next) => {
 // password : "321", //string
 // address : 'Test', //string
 // name : 'Test' //string
-// phoneNumber : '123' //string
+// phoneNumber : '123', //string
+// lat : 106.11, //float
+// long : 70.11 //float
 //}
 router.put('/', (req, res, next) => {
     let body = req.body
@@ -52,7 +89,7 @@ router.put('/', (req, res, next) => {
 ////////////////////
 
 //////////Get All Promotion Which Have Status 'Accepted'
-//sử dụng localhost:3000/customer/promotion?id=...&search=...&type=...&latest=... 
+//sử dụng localhost:3000/customer/promotion?search=...&type=...&latest=... 
 //trong đó search là từ khóa tìm kiếm, type là loại Category, latest là sort theo thời gian (nhập true nếu sử dụng)
 //search, type và latest trong URL là mục đích dùng tìm kiếm và lọc
 router.get('/promotion', (req, res, next) => {

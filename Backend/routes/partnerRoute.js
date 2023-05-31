@@ -24,6 +24,41 @@ router.get('/', (req, res, next) => {
 })
 ////////////////////
 
+//////////Get One Partner
+//sử dụng localhost:3000/partner/:id trong đó :id là partnerID
+router.get('/:id', (req, res, next) => {
+    if (!isNaN(req.params.id)) {
+        let param = req.params.id
+        partner.getOne({
+            where: {
+                [Op.and]: [
+                    { id: param },
+                    { isDeleted: false }
+                ]
+            }
+        }).then(data => {
+            if (data) {
+                res.json({
+                    success: true,
+                    message: null,
+                    data: data
+                })
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: `Not found id ${param}`
+                })
+            }
+        }).catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+////////////////////
+
 //////////Update Partner
 //Dùng để cập nhật data của partner với đầu vào :
 //==>{
