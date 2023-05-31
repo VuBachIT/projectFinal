@@ -456,13 +456,15 @@ router.get('/reward', (req, res, next) => {
 //////////Insert Reward (Win The Game)
 //Dùng để ghi data của customer khi nhận được voucher với đầu vào :
 //==>{
-// expDate : "2023-12-12" //string
 // customerID : 1 //int
 // promotionID : 1, //int
 // voucherID : 1 //int
 //}
 router.post('/reward', (req, res, next) => {
     let body = req.body
+    let date = new Date()
+    let expDate = new Date(date.setMonth(date.getMonth()+1));
+    body.expDate = expDate
     body.isUsed = false
     body.createdAt = Sequelize.literal('NOW()')
     body.updatedAt = Sequelize.literal('NOW()')

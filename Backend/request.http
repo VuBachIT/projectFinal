@@ -1,19 +1,12 @@
-POST http://localhost:3000/partner/promotion
+###
+
+POST http://localhost:3000/admin/account
 Content-Type: application/json
 
 {
-    "title" : "Test",
-    "description" : "Test",
-    "start" : "2023-12-21",
-    "end" : "2023-12-21",
-    "gameID" : 1,
-    "partnerID" : 1,
-    "vouchers" : [
-        {
-            "id" : 1,
-            "quantity" : 50 
-        }
-    ] 
+    "email" : "test@gmail.com",
+    "password" : "123",
+    "name" : "Test Inc"
 }
 
 ###
@@ -30,7 +23,6 @@ POST http://localhost:3000/customer/reward
 Content-Type: application/json
 
 {
-    "expDate" : "2023-12-12",
     "customerID" : 1,
     "voucherID" : 1,
     "promotionID" : 2

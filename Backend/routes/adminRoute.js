@@ -235,12 +235,12 @@ router.get('/account/:id', (req, res, next) => {
 //////////Insert Account (Partner)
 //Dùng để ghi data của partner với đầu vào :
 //==>{
-// email : "Test", //string
+// email : 'Test', //string
 // password : 'Test', //string
-// address : 'Test', //string
 // name : 'Test' //string
 // }
 router.post('/account', (req, res, next) => {
+    console.log(req.body)
     let body = req.body
     partner.getOne({ where: { email: body.email } })
         .then(data => {
