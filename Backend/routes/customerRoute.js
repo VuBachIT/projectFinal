@@ -607,7 +607,7 @@ router.get('/voucher/:id', (req, res, next) => {
                 })
             }
         }).catch(error => next(error))
-    }else{
+    } else {
         res.status(406).json({
             success: false,
             message: 'Incorrect method'
@@ -623,19 +623,33 @@ router.get('/reward', (req, res, next) => {
     if (req.query.id) {
         let query = req.query.id
         reward.getAll({
+            include: [
+                {
+                    attributes: ['id', 'title', 'description', 'value'],
+                    model: models.Voucher
+                }
+            ],
             where: {
                 [Op.and]: [
                     { expDate: { [Op.gte]: date } },
                     { isUsed: false },
                     { customerID: query }
                 ]
-            }
+            },
+            order: [['id', 'ASC']]
         })
-            .then(data => {
+            .then(rewards => {
+                rewards.forEach(parent => {
+                    let voucher = parent.Voucher.dataValues
+                    parent.Voucher = voucher
+                })
+                return rewards
+            })
+            .then(rewards => {
                 res.json({
                     success: true,
                     message: null,
-                    data: data
+                    data: rewards
                 })
             })
             .catch(error => next(error))
