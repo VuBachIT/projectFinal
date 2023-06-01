@@ -81,7 +81,7 @@ router.put('/info', (req, res, next) => {
         if (data) {
             bcrypt.compare(body.check, data.password, (err, result) => {
                 if (result) {
-                    partner.updateData(body, { where: { id: body.id } })
+                    customer.updateData(body, { where: { id: body.id } })
                         .then(result => {
                             if (result) {
                                 res.json({
@@ -106,7 +106,7 @@ router.put('/info', (req, res, next) => {
         } else {
             res.status(404).json({
                 success: false,
-                message: `Not found id ${param}`
+                message: `Not found id ${body.id}`
             })
         }
     }).catch(error => next(error))
@@ -161,7 +161,7 @@ router.put('/password', (req, res, next) => {
         } else {
             res.status(404).json({
                 success: false,
-                message: `Not found id ${param}`
+                message: `Not found id ${body.id}`
             })
         }
     }).catch(error => next(error))
