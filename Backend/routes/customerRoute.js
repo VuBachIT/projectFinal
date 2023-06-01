@@ -61,30 +61,110 @@ router.get('/get/:id', (req, res, next) => {
 //Dùng để cập nhật data của customer với đầu vào :
 //==>{
 // id : 1 //int
-// password : "321", //string
+// check : "321", //string
 // address : 'Test', //string
 // name : 'Test' //string
 // phoneNumber : '123', //string
 // lat : 106.11, //float
 // long : 70.11 //float
 //}
-router.put('/', (req, res, next) => {
+router.put('/info', (req, res, next) => {
     let body = req.body
-    customer.updateData(body, { where: { id: body.id } })
-        .then(result => {
-            if (result) {
-                res.json({
-                    success: true,
-                    message: null
-                })
-            } else {
-                res.status(400).json({
-                    success: false,
-                    message: `Update unsuccessful in customerID ${body.id}`
-                })
-            }
-        })
-        .catch(error => next(error))
+    customer.getOne({
+        where: {
+            [Op.and]: [
+                { id: body.id },
+                { isDeleted: false }
+            ]
+        }
+    }).then(data => {
+        if (data) {
+            bcrypt.compare(body.check, data.password, (err, result) => {
+                if (result) {
+                    partner.updateData(body, { where: { id: body.id } })
+                        .then(result => {
+                            if (result) {
+                                res.json({
+                                    success: true,
+                                    message: null
+                                })
+                            } else {
+                                res.status(404).json({
+                                    success: false,
+                                    message: `Update unsuccessful in partnerID ${body.id}`
+                                })
+                            }
+                        })
+                        .catch(error => next(error))
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        message: "Incorrect password"
+                    })
+                }
+            })
+        } else {
+            res.status(404).json({
+                success: false,
+                message: `Not found id ${param}`
+            })
+        }
+    }).catch(error => next(error))
+})
+////////////////////
+
+//////////Update Customer (Password Customer)
+//Dùng để cập nhật mật khẩu data của customer với đầu vào :
+//==>{
+// id : 1 //int
+// check : "321", //string => dùng để kiểm tra
+// password : 'Test', //string => dùng để lưu
+//}
+router.put('/password', (req, res, next) => {
+    let body = req.body
+    customer.getOne({
+        where: {
+            [Op.and]: [
+                { id: body.id },
+                { isDeleted: false }
+            ]
+        }
+    }).then(data => {
+        if (data) {
+            bcrypt.compare(body.check, data.password, (err, result) => {
+                if (result) {
+                    bcrypt.hash(body.password, saltRounds, (err, hash) => {
+                        body.password = hash
+                        customer.updateData(body, { where: { id: body.id } })
+                            .then(result => {
+                                if (result) {
+                                    res.json({
+                                        success: true,
+                                        message: null
+                                    })
+                                } else {
+                                    res.status(404).json({
+                                        success: false,
+                                        message: `Update unsuccessful in partnerID ${body.id}`
+                                    })
+                                }
+                            })
+                            .catch(error => next(error))
+                    })
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        message: "Incorrect password"
+                    })
+                }
+            })
+        } else {
+            res.status(404).json({
+                success: false,
+                message: `Not found id ${param}`
+            })
+        }
+    }).catch(error => next(error))
 })
 ////////////////////
 
@@ -186,6 +266,84 @@ router.get('/promotion', (req, res, next) => {
             })
         })
         .catch(error => next(error))
+})
+////////////////////
+
+//////////Get One Promotion By PromotionID
+//sử dụng localhost:3000/customer/promotion/:id trong :id là id của promotion
+//ví dụ localhost:3000/customer/promotion/1
+router.get('/promotion/:id', (req, res, next) => {
+    if (!isNaN(req.params.id)) {
+        let param = parseInt(req.params.id)
+        promotion.getOne({
+            attributes: ['id', 'title', 'description', 'start', 'end'],
+            include: [
+                {
+                    attributes: ['quantity', 'balanceQty'],
+                    model: models.Detail,
+                    include: [{
+                        attributes: ['id', 'title', 'description', 'value'],
+                        model: models.Voucher
+                    }]
+                },
+                {
+                    attributes: ['state'],
+                    model: models.Status,
+                },
+                {
+                    attributes: ['id', 'title'],
+                    model: models.Game,
+                }
+            ],
+            where: {
+                [Op.and]: [
+                    { id: param },
+                    { isDeleted: false }
+                ]
+            }
+        })
+            .then(data => {
+                if (data) {
+                    let arr = []
+                    data.Details.forEach(element => {
+                        let voucher = element.dataValues.Voucher
+                        element.dataValues.Voucher = voucher.dataValues
+                        arr.push(element.dataValues)
+                    })
+                    data.Details = arr
+                }
+                return data
+            })
+            .then(data => {
+                if (data) {
+                    let status = data.Status.dataValues.state
+                    let game = data.Game.dataValues
+                    data.Status = status
+                    data.Game = game
+                }
+                return data
+            })
+            .then(data => {
+                if (data) {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Not found id ${param}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
 })
 ////////////////////
 
@@ -463,7 +621,7 @@ router.get('/reward', (req, res, next) => {
 router.post('/reward', (req, res, next) => {
     let body = req.body
     let date = new Date()
-    let expDate = new Date(date.setMonth(date.getMonth()+1));
+    let expDate = new Date(date.setMonth(date.getMonth() + 1));
     body.expDate = expDate
     body.isUsed = false
     body.createdAt = Sequelize.literal('NOW()')

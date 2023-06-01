@@ -44,5 +44,12 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/partner
+POST http://localhost:3000/user/signin
+Content-Type: application/json
+
+{
+    "email" : "bach_the_great@gmail.com",
+    "password" : "1234",
+    "role" : "customer"
+}
 

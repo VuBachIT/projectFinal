@@ -1,9 +1,7 @@
 require('dotenv').config()
 
-let fetch = require('node-fetch')
 let express = require('express');
 let bodyParser = require('body-parser')
-let Sequelize = require('sequelize')
 let verifyToken = require('./controllers/authMiddleware')
 let app = express();
 
@@ -28,18 +26,6 @@ app.get('/sync', (req, res) => {
         res.send('Database Sync Completed')
     })
 })
-
-// app.get('/test', (req, res) => {
-//     fetch(`https://api.geoapify.com/v1/geocode/search?housenumber=125&street=Bui%20Dinh%20Tuy&city=Ho%20Chi%20Minh%20City&country=Vietnam&format=json&apiKey=554ca114825944d58808302cf431a94b`)
-//         .then(response => response.json())
-//         .then(data => {
-//             console.log(data)
-//             res.send('Test')
-//         })
-//         .catch(error => {
-//             console.log(error)
-//         })
-// })
 
 app.use('/data', require('./routes/dataRoute')) //Chỉ dùng khi thêm dữ liệu
 app.use('/user', require('./routes/userRoute'))

@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Partner.init({
     email: DataTypes.STRING,
-    password: DataTypes.STRING,
+    password: DataTypes.STRING(500),
     name: DataTypes.STRING,
     address: DataTypes.STRING(500),
     isDeleted: DataTypes.BOOLEAN

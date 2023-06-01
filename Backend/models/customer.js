@@ -11,11 +11,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Customer.init({
     email: DataTypes.STRING,
-    password: DataTypes.STRING,
+    password: DataTypes.STRING(500),
     address: DataTypes.STRING(500),
     phoneNumber: DataTypes.STRING,
     name: DataTypes.STRING,
-    lang : DataTypes.FLOAT,
+    lat : DataTypes.FLOAT,
     long : DataTypes.FLOAT,
     isDeleted : DataTypes.BOOLEAN
   }, {

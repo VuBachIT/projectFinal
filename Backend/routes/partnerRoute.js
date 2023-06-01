@@ -1,5 +1,6 @@
 let express = require('express')
 let router = express.Router()
+let bcrypt = require('bcrypt')
 let Sequelize = require('sequelize')
 let Op = Sequelize.Op
 let models = require('../models')
@@ -59,31 +60,111 @@ router.get('/get/:id', (req, res, next) => {
 })
 ////////////////////
 
-//////////Update Partner
-//Dùng để cập nhật data của partner với đầu vào :
+//////////Update Partner (Info Partner)
+//Dùng để cập nhật thông tin data của partner với đầu vào :
 //==>{
 // id : 1 //int
-// password : "321", //string
+// check : "321", //string => dùng để kiểm tra
 // address : 'Test', //string
 // name : 'Test' //string
 //}
-router.put('/', (req, res, next) => {
+router.put('/info', (req, res, next) => {
     let body = req.body
-    partner.updateData(body, { where: { id: body.id } })
-        .then(result => {
-            if (result) {
-                res.json({
-                    success: true,
-                    message: null
-                })
-            } else {
-                res.status(400).json({
-                    success: false,
-                    message: `Update unsuccessful in partnerID ${body.id}`
-                })
-            }
-        })
-        .catch(error => next(error))
+    partner.getOne({
+        where: {
+            [Op.and]: [
+                { id: body.id },
+                { isDeleted: false }
+            ]
+        }
+    }).then(data => {
+        if (data) {
+            bcrypt.compare(body.check, data.password, (err, result) => {
+                if (result) {
+                    partner.updateData(body, { where: { id: body.id } })
+                        .then(result => {
+                            if (result) {
+                                res.json({
+                                    success: true,
+                                    message: null
+                                })
+                            } else {
+                                res.status(404).json({
+                                    success: false,
+                                    message: `Update unsuccessful in partnerID ${body.id}`
+                                })
+                            }
+                        })
+                        .catch(error => next(error))
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        message: "Incorrect password"
+                    })
+                }
+            })
+        } else {
+            res.status(404).json({
+                success: false,
+                message: `Not found id ${param}`
+            })
+        }
+    }).catch(error => next(error))
+})
+////////////////////
+
+//////////Update Partner (Password Partner)
+//Dùng để cập nhật mật khẩu data của partner với đầu vào :
+//==>{
+// id : 1 //int
+// check : "321", //string => dùng để kiểm tra
+// password : 'Test', //string => dùng để lưu
+//}
+router.put('/password', (req, res, next) => {
+    let body = req.body
+    partner.getOne({
+        where: {
+            [Op.and]: [
+                { id: body.id },
+                { isDeleted: false }
+            ]
+        }
+    }).then(data => {
+        if (data) {
+            bcrypt.compare(body.check, data.password, (err, result) => {
+                if (result) {
+                    bcrypt.hash(body.password, saltRounds, (err, hash) => {
+                        body.password = hash
+                        partner.updateData(body, { where: { id: body.id } })
+                            .then(result => {
+                                if (result) {
+                                    res.json({
+                                        success: true,
+                                        message: null
+                                    })
+                                } else {
+                                    res.status(404).json({
+                                        success: false,
+                                        message: `Update unsuccessful in partnerID ${body.id}`
+                                    })
+                                }
+                            })
+                            .catch(error => next(error))
+                    })
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        message: "Incorrect password"
+                    })
+                }
+            })
+        } else {
+            res.status(404).json({
+                success: false,
+                message: `Not found id ${param}`
+            })
+        }
+    }).catch(error => next(error))
 })
 ////////////////////
 

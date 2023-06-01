@@ -1,5 +1,6 @@
 let express = require('express')
 let router = express.Router();
+let bcrypt = require('bcrypt')
 let Sequelize = require('sequelize')
 let jwt = require('jsonwebtoken')
 let Op = Sequelize.Op
@@ -9,6 +10,7 @@ let Partner = require('../controllers/partnerClass')
 let customer = new Customer()
 let admin = new Admin()
 let partner = new Partner()
+let saltRounds = 10
 
 //////////Test Route
 router.get('/', (req, res, next) => {
@@ -30,24 +32,33 @@ router.post('/signin', (req, res, next) => {
             where: {
                 [Op.and]: [
                     { email: body.email },
-                    { password: body.password },
                     { isDeleted: false }
                 ]
             }
         }).then(data => {
             if (data) {
-                data.role = body.role
-                const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
-                res.json({
-                    success: true,
-                    message: null,
-                    token: token,
-                    data: data
+                bcrypt.compare(body.password, data.password, (err, result) => {
+                    if (result) {
+                        data.role = body.role
+                        data.password = null
+                        const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
+                        res.json({
+                            success: true,
+                            message: null,
+                            token: token,
+                            data: data
+                        })
+                    } else {
+                        res.status(401).json({
+                            success: false,
+                            message: "Incorrect password"
+                        })
+                    }
                 })
             } else {
                 res.status(401).json({
                     success: false,
-                    message: "Incorrect email or password"
+                    message: "Incorrect email"
                 })
             }
         }).catch(error => next(error))
@@ -56,24 +67,33 @@ router.post('/signin', (req, res, next) => {
             where: {
                 [Op.and]: [
                     { email: body.email },
-                    { password: body.password },
                     { isDeleted: false }
                 ]
             }
         }).then(data => {
             if (data) {
-                data.role = body.role
-                const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
-                res.json({
-                    success: true,
-                    message: null,
-                    token: token,
-                    data: data
+                bcrypt.compare(body.password, data.password, (err, result) => {
+                    if (result) {
+                        data.role = body.role
+                        data.password = null
+                        const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
+                        res.json({
+                            success: true,
+                            message: null,
+                            token: token,
+                            data: data
+                        })
+                    } else {
+                        res.status(401).json({
+                            success: false,
+                            message: "Incorrect password"
+                        })
+                    }
                 })
             } else {
                 res.status(401).json({
                     success: false,
-                    message: "Incorrect email or password"
+                    message: "Incorrect email"
                 })
             }
         }).catch(error => next(error))
@@ -82,24 +102,33 @@ router.post('/signin', (req, res, next) => {
             where: {
                 [Op.and]: [
                     { email: body.email },
-                    { password: body.password },
                     { isDeleted: false }
                 ]
             }
         }).then(data => {
             if (data) {
-                data.role = body.role
-                const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
-                res.json({
-                    success: true,
-                    message: null,
-                    token: token,
-                    data: data
+                bcrypt.compare(body.password, data.password, (err, result) => {
+                    if (result) {
+                        data.role = body.role
+                        data.password = null
+                        const token = jwt.sign({ id: data.id, email: data.email }, process.env.ACCESS_TOKEN_SECRET)
+                        res.json({
+                            success: true,
+                            message: null,
+                            token: token,
+                            data: data
+                        })
+                    } else {
+                        res.status(401).json({
+                            success: false,
+                            message: "Incorrect password"
+                        })
+                    }
                 })
             } else {
                 res.status(401).json({
                     success: false,
-                    message: "Incorrect email or password"
+                    message: "Incorrect email"
                 })
             }
         }).catch(error => next(error))
@@ -136,16 +165,19 @@ router.post('/signup', (req, res, next) => {
                 body.isDeleted = false
                 body.createdAt = Sequelize.literal('NOW()')
                 body.updatedAt = Sequelize.literal('NOW()')
-                customer.insertData(body)
-                    .then(result => {
-                        if (result) {
-                            res.json({
-                                success: true,
-                                message: null
-                            })
-                        }
-                    })
-                    .catch(error => next(error))
+                bcrypt.hash(body.password, saltRounds, (err, hash) => {
+                    body.password = hash
+                    customer.insertData(body)
+                        .then(result => {
+                            if (result) {
+                                res.json({
+                                    success: true,
+                                    message: null
+                                })
+                            }
+                        })
+                        .catch(error => next(error))
+                })
             }
         })
         .catch(error => next(error))

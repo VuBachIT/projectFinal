@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Admin.init({
     email: DataTypes.STRING,
-    password: DataTypes.STRING,
+    password: DataTypes.STRING(500),
     isDeleted : DataTypes.BOOLEAN
   }, {
     sequelize,
