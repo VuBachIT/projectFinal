@@ -9,12 +9,14 @@ let Participation = require('../controllers/participationClass')
 let Customer = require('../controllers/customerClass')
 let Reward = require('../controllers/rewardClass')
 let Detail = require('../controllers/detailClass')
+let Voucher = require('../controllers/voucherClass')
 let promotion = new Promotion()
 let category = new Category()
 let participation = new Participation()
 let customer = new Customer()
 let reward = new Reward()
 let detail = new Detail()
+let voucher = new Voucher
 
 //////////Test Route
 router.get('/', (req, res, next) => {
@@ -576,6 +578,41 @@ router.get('/category', (req, res, next) => {
             })
         })
         .catch(error => next(error))
+})
+////////////////////
+
+//////////Get One Voucher
+//sử dụng localhost:3000/customer/voucher/:id trong đó :id là id của voucher
+router.get('/voucher/:id', (req, res, next) => {
+    if (!isNaN(req.params.id)) {
+        let param = req.params.id
+        voucher.getOne({
+            where: {
+                [Op.and]: [
+                    { id: param },
+                    { isDeleted: false }
+                ]
+            }
+        }).then(data => {
+            if (data) {
+                res.json({
+                    success: true,
+                    message: null,
+                    data: data
+                })
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: `Not found id ${param}`
+                })
+            }
+        }).catch(error => next(error))
+    }else{
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
 })
 ////////////////////
 
