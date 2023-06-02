@@ -94,7 +94,7 @@ router.put('/info', (req, res, next) => {
                             } else {
                                 res.status(404).json({
                                     success: false,
-                                    message: `Update unsuccessful in partnerID ${body.id}`
+                                    message: `Update unsuccessful in customerID ${body.id}`
                                 })
                             }
                         })
@@ -148,7 +148,7 @@ router.put('/password', (req, res, next) => {
                                 } else {
                                     res.status(404).json({
                                         success: false,
-                                        message: `Update unsuccessful in partnerID ${body.id}`
+                                        message: `Update unsuccessful in customerID ${body.id}`
                                     })
                                 }
                             })

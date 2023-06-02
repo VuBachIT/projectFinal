@@ -2,6 +2,8 @@ let express = require('express')
 let router = express.Router()
 let Sequelize = require('sequelize')
 let models = require('../models');
+let bcrypt = require('bcrypt')
+let saltRounds = 10
 
 //Cách sử dụng
 //==> nhập đường dẫn localhost:3000/data/...
@@ -10,7 +12,7 @@ let models = require('../models');
 router.get('/game', (req, res) => {
     let data = [{
         title: 'Game A',
-        isDeleted : false,
+        isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
@@ -52,21 +54,21 @@ router.get('/voucher', (req, res) => {
         title: 'Voucher A',
         description: 'Test',
         value: 0.5,
-        isDeleted : false,
+        isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
         title: 'Voucher B',
         description: 'Test',
         value: 0.5,
-        isDeleted : false,
+        isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
         title: 'Voucher C',
         description: 'Test',
         value: 0.5,
-        isDeleted : false,
+        isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
@@ -98,7 +100,10 @@ router.get('/admin', (req, res) => {
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
-    models.Admin.bulkCreate(data).then(res.send("Admin Create"))
+    bcrypt.hash(data[0].password, saltRounds, (err, hash) => {
+        data[0].password = hash
+        models.Admin.bulkCreate(data).then(res.send("Admin Create"))
+    })
 })
 
 router.get('/customer', (req, res) => {
@@ -106,8 +111,8 @@ router.get('/customer', (req, res) => {
         email: 'customer@gmail.com',
         password: '123',
         phoneNumber: '123',
-        address : 'Test',
-        name : 'Test',
+        address: 'Test',
+        name: 'Test',
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
@@ -119,24 +124,24 @@ router.get('/partner', (req, res) => {
     let data = [{
         email: 'partner1@gmail.com',
         password: '123',
-        address : 'Test',
-        name : 'Test',
+        address: 'Test',
+        name: 'Test',
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
-    },{
+    }, {
         email: 'partner2@gmail.com',
         password: '123',
-        address : 'Test',
-        name : 'Test',
+        address: 'Test',
+        name: 'Test',
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
-    },{
+    }, {
         email: 'partner3@gmail.com',
         password: '123',
-        address : 'Test',
-        name : 'Test',
+        address: 'Test',
+        name: 'Test',
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
