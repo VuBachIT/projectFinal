@@ -11,6 +11,7 @@ let Admin = require('../controllers/adminClass')
 let Game = require('../controllers/gameClass')
 let Voucher = require('../controllers/voucherClass')
 let Status = require('../controllers/statusClass')
+let Category = require('../controllers/categoryClass')
 let promotion = new Promotion()
 let partner = new Partner()
 let customer = new Customer()
@@ -18,6 +19,7 @@ let admin = new Admin()
 let game = new Game()
 let voucher = new Voucher()
 let status = new Status()
+let category = new Category()
 let saltRounds = 10
 
 //////////Test Route
@@ -31,6 +33,20 @@ router.get('/status', (req, res, next) => {
     status.getAll({
         order: [['id', 'ASC']]
     })
+        .then(data => {
+            res.json({
+                success: true,
+                message: null,
+                data: data
+            })
+        })
+        .catch(error => next(error))
+})
+////////////////////
+
+//////////Get All Category
+router.get('/category', (req, res, next) => {
+    category.getAll({ order: [['id', 'ASC']] })
         .then(data => {
             res.json({
                 success: true,
@@ -313,7 +329,8 @@ router.get('/account/:id', (req, res, next) => {
 //==>{
 // email : 'Test', //string
 // password : 'Test', //string
-// name : 'Test' //string
+// name : 'Test', //string
+// categoryID : 1// int
 // }
 router.post('/account', (req, res, next) => {
     let body = req.body

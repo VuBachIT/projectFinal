@@ -15,7 +15,7 @@ GET http://localhost:3000/customer/nearby?lat=10.78098595602969&long=106.6753383
 
 ###
 
-GET http://localhost:3000/customer/location?search=1
+GET http://localhost:3000/customer/promotion?search=&type=&latest=true&location=
 
 ###
 

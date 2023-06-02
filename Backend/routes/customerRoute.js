@@ -231,6 +231,7 @@ router.get('/promotion', (req, res, next) => {
         order: latest
     })
         .then(promotions => {
+            console.log(promotions)
             let arr = []
             promotions.forEach(parent => {
                 parent.Details.forEach(child => {
