@@ -1,5 +1,6 @@
 let express = require('express')
 let router = express.Router()
+let bcrypt = require('bcrypt')
 let Sequelize = require('sequelize')
 let Op = Sequelize.Op
 let models = require('../models')
@@ -17,6 +18,7 @@ let admin = new Admin()
 let game = new Game()
 let voucher = new Voucher()
 let status = new Status()
+let saltRounds = 10
 
 //////////Test Route
 router.get('/', (req, res, next) => {
@@ -326,16 +328,19 @@ router.post('/account', (req, res, next) => {
                 body.isDeleted = false
                 body.createdAt = Sequelize.literal('NOW()')
                 body.updatedAt = Sequelize.literal('NOW()')
-                partner.insertData(body)
-                    .then(result => {
-                        if (result) {
-                            res.json({
-                                success: true,
-                                message: null
-                            })
-                        }
-                    })
-                    .catch(error => next(error))
+                bcrypt.hash(body.password, saltRounds, (err, hash) => {
+                    body.password = hash
+                    partner.insertData(body)
+                        .then(result => {
+                            if (result) {
+                                res.json({
+                                    success: true,
+                                    message: null
+                                })
+                            }
+                        })
+                        .catch(error => next(error))
+                })
             }
         })
         .catch(error => next(error))
