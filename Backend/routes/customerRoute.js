@@ -177,7 +177,7 @@ router.put('/password', (req, res, next) => {
 //search, location, type và latest trong URL là mục đích dùng tìm kiếm và lọc
 router.get('/promotion', (req, res, next) => {
     let search = (req.query.search) ? { title: { [Op.iLike]: `%${req.query.search}%` } } : {}
-    let type = (req.query.type) ? { state: req.query.type } : {}
+    let type = (req.query.type) ? { type: req.query.type } : {}
     let location = (req.query.location) ? { address: { [Op.iLike]: `%${req.query.location}%` } } : {}
     let latest = (req.query.latest == 'true') ? [['start', 'DESC']] : [['id', 'ASC']]
     promotion.getAll({
@@ -581,50 +581,68 @@ router.post('/reward', (req, res, next) => {
     body.isUsed = false
     body.createdAt = Sequelize.literal('NOW()')
     body.updatedAt = Sequelize.literal('NOW()')
-    reward.insertData(body)
-        .then(result => {
-            if (result) {
-                console.log('Insert successful')
-            }
-            return body
-        })
-        .then(object => {
-            detail.getOne({
-                where: {
-                    [Op.and]: [
-                        { promotionID: object.promotionID },
-                        { voucherID: object.voucherID }
-                    ]
-                }
-            })
-                .then(data => {
-                    if (data) {
-                        detail.updateData({ balanceQty: --data.balanceQty }, { where: { id: data.id } })
-                            .then(result => {
-                                if (result) {
-                                    console.log(`Update quantity successful`)
-                                    res.json({
-                                        success: true,
-                                        message: null
-                                    })
+    reward.countData({
+        where: {
+            customerID: body.customerID,
+            promotionID: body.promotionID,
+        }
+    })
+        .then(count => {
+            console.log(count)
+            if (count < 5) {
+                reward.insertData(body)
+                    .then(result => {
+                        if (result) {
+                            console.log('Insert successful')
+                        }
+                        return body
+                    })
+                    .then(object => {
+                        detail.getOne({
+                            where: {
+                                [Op.and]: [
+                                    { promotionID: object.promotionID },
+                                    { voucherID: object.voucherID }
+                                ]
+                            }
+                        })
+                            .then(data => {
+                                if (data) {
+                                    detail.updateData({ balanceQty: --data.balanceQty }, { where: { id: data.id } })
+                                        .then(result => {
+                                            if (result) {
+                                                console.log(`Update quantity successful`)
+                                                res.json({
+                                                    success: true,
+                                                    message: null
+                                                })
+                                            } else {
+                                                res.status(400).json({
+                                                    success: false,
+                                                    message: `Update quantity unsuccessful in detailID ${data.id}`
+                                                })
+                                            }
+                                        })
+                                        .catch(error => next(error))
                                 } else {
-                                    res.status(400).json({
+                                    res.status(404).json({
                                         success: false,
-                                        message: `Update quantity unsuccessful in detailID ${data.id}`
+                                        message: 'Not found detailID'
                                     })
                                 }
                             })
                             .catch(error => next(error))
-                    } else {
-                        res.status(404).json({
-                            success: false,
-                            message: 'Not found detailID'
-                        })
-                    }
+                    })
+                    .catch(error => next(error))
+            }else{
+                res.status(405).json({
+                    success: false,
+                    message: `Over reward`
                 })
-                .catch(error => next(error))
+            }
         })
         .catch(error => next(error))
+
 })
 /////////////////////
 
@@ -675,18 +693,34 @@ router.put('/reward', (req, res, next) => {
 //////////Insert Participation (Join The Promotion)
 //Dùng để ghi data của participation với đầu vào :
 //==>{
-// customerId : 1 //int
+// customerID : 1 //int
 // promotionID : 1, //int
 //}
 router.post('/join', (req, res, next) => {
     let body = req.body
     body.createdAt = Sequelize.literal('NOW()')
     body.updatedAt = Sequelize.literal('NOW()')
-    participation.insertData(body)
-        .then(result => {
-            if (result) {
+    participation.getOne({
+        where: {
+            customerID: body.customerID,
+            promotionID: body.promotionID
+        }
+    })
+        .then(data => {
+            if (!data) {
+                participation.insertData(body)
+                    .then(result => {
+                        if (result) {
+                            res.json({
+                                success: true,
+                                message: null
+                            })
+                        }
+                    })
+                    .catch(error => next(error))
+            } else {
                 res.json({
-                    success: true,
+                    success: false,
                     message: null
                 })
             }

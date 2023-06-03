@@ -367,44 +367,88 @@ router.post('/account', (req, res, next) => {
 //////////Update Account (Partner,Customer)
 //Dùng để cập nhật data (partner, customer) với đầu vào :
 //==>{
-// id : 1 //int
+// id : 1 //int,
+// password : '123', //string (Chỉ thêm khi có chỉnh sửa)
 //... ==> dữ liệu cần cập nhật
 // type : 'partner' //string ==> viết thường không hoa
 //}
 router.put('/account', (req, res, next) => {
     let body = req.body
     if (body.type == 'partner') {
-        partner.updateData(body, { where: { id: body.id } })
-            .then(result => {
-                if (result) {
-                    res.json({
-                        success: true,
-                        message: null
+        if (body.password) {
+            bcrypt.hash(body.password, saltRounds, (err, hash) => {
+                body.password = hash
+                partner.updateData(body, { where: { id: body.id } })
+                    .then(result => {
+                        if (result) {
+                            res.json({
+                                success: true,
+                                message: null
+                            })
+                        } else {
+                            res.status(400).json({
+                                success: false,
+                                message: `Update unsuccessful in partnerID ${body.id}`
+                            })
+                        }
                     })
-                } else {
-                    res.status(400).json({
-                        success: false,
-                        message: `Update unsuccessful in partnerID ${body.id}`
-                    })
-                }
+                    .catch(error => next(error))
             })
-            .catch(error => next(error))
+        } else {
+            partner.updateData(body, { where: { id: body.id } })
+                .then(result => {
+                    if (result) {
+                        res.json({
+                            success: true,
+                            message: null
+                        })
+                    } else {
+                        res.status(400).json({
+                            success: false,
+                            message: `Update unsuccessful in partnerID ${body.id}`
+                        })
+                    }
+                })
+                .catch(error => next(error))
+        }
+
     } else if (body.type == 'customer') {
-        customer.updateData(body, { where: { id: body.id } })
-            .then(result => {
-                if (result) {
-                    res.json({
-                        success: true,
-                        message: null
+        if (body.password) {
+            bcrypt.hash(body.password, saltRounds, (err, hash) => {
+                body.password = hash
+                customer.updateData(body, { where: { id: body.id } })
+                    .then(result => {
+                        if (result) {
+                            res.json({
+                                success: true,
+                                message: null
+                            })
+                        } else {
+                            res.status(400).json({
+                                success: false,
+                                message: `Update unsuccessful in customerID ${body.id}`
+                            })
+                        }
                     })
-                } else {
-                    res.status(400).json({
-                        success: false,
-                        message: `Update unsuccessful in customerID ${body.id}`
-                    })
-                }
+                    .catch(error => next(error))
             })
-            .catch(error => next(error))
+        } else {
+            customer.updateData(body, { where: { id: body.id } })
+                .then(result => {
+                    if (result) {
+                        res.json({
+                            success: true,
+                            message: null
+                        })
+                    } else {
+                        res.status(400).json({
+                            success: false,
+                            message: `Update unsuccessful in customerID ${body.id}`
+                        })
+                    }
+                })
+                .catch(error => next(error))
+        }
     } else {
         res.status(406).json({
             success: false,

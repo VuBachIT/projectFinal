@@ -33,6 +33,14 @@ class Reward {
                 .catch(error => reject(new Error(error)))
         })
     }
+
+    countData(condition) {
+        return new Promise((resolve, reject) => {
+            reward.count(condition)
+                .then(response => { resolve(response) })
+                .catch(error => reject(new Error(error)))
+        })
+    }
 }
 
 module.exports = Reward
