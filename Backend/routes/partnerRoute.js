@@ -209,7 +209,7 @@ router.get('/promotion', (req, res, next) => {
     if (req.query.id) {
         let query = req.query.id
         let search = (req.query.search) ? { title: { [Op.iLike]: `%${req.query.search}%` } } : {}
-        let type = (req.query.type) ? { state: req.query.type } : {}
+        let type = (req.query.type) ? { type: req.query.type } : {}
         promotion.getAll({
             attributes: ['id', 'title', 'description', 'start', 'end'],
             include: [
@@ -691,6 +691,98 @@ router.put('/use', (req, res, next) => {
                         message: `Update unsuccessful in rewardID ${query}`
                     })
                 }
+            })
+            .catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
+})
+////////////////////
+
+//////////Get All Promotion By PartnerID
+//sử dụng localhost:3000/partner/promotion?id=... trong đó id là partnerID
+router.get('/statistic', (req, res, next) => {
+    if (req.query.id) {
+        let query = req.query.id
+        promotion.getAll({
+            attributes: ['id', 'title', 'description', 'start', 'end'],
+            include: [
+                {
+                    attributes: ['quantity', 'balanceQty'],
+                    model: models.Detail,
+                    include: [{
+                        attributes: ['id', 'title', 'description', 'value'],
+                        model: models.Voucher,
+                    }]
+                },
+                {
+                    attributes: ['state'],
+                    model: models.Status,
+                },
+                {
+                    attributes: ['title'],
+                    model: models.Game,
+                },
+                {
+                    attributes: ['id', 'expDate', 'isUsed'],
+                    model: models.Reward
+                },
+                {
+                    model: models.Participation,
+                }
+            ],
+            where: {
+                [Op.and]: [
+                    { partnerID: query },
+                    { isDeleted: false },
+                ]
+            },
+            order: [['id', 'ASC']]
+        })
+            .then(promotions => {
+                let arr = []
+                promotions.forEach(parent => {
+                    parent.Details.forEach(child => {
+                        let voucher = child.dataValues.Voucher
+                        child.dataValues.Voucher = voucher.dataValues
+                        arr.push(child.dataValues)
+                    })
+                    parent.Details = arr
+                    arr = []
+                })
+                return promotions
+            })
+            .then(promotions => {
+                let arr = []
+                promotions.forEach(parent => {
+                    parent.Rewards.forEach(child => {
+                        arr.push(child.dataValues)
+                    })
+                    parent.Rewards = arr
+                    arr = []
+                })
+                return promotions
+            })
+            .then(promotions => {
+                promotions.forEach(parent => {
+                    let status = parent.Status.dataValues.state
+                    let game = parent.Game.dataValues.title
+                    let participations = parent.Participations.length
+                    parent.Status = status
+                    parent.Game = game
+                    parent.Participations = participations
+                })
+                return promotions
+            })
+            .then(promotions => {
+                res.json({
+                    success: true,
+                    message: null,
+                    data: promotions
+                })
             })
             .catch(error => next(error))
     } else {

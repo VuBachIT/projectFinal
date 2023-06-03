@@ -28,6 +28,61 @@ router.get('/', (req, res, next) => {
 })
 ////////////////////
 
+//////////Update Admin (Password Admin)
+//Dùng để cập nhật mật khẩu data của admin với đầu vào :
+//==>{
+// id : 1 //int
+// check : "321", //string => dùng để kiểm tra
+// password : 'Test', //string => dùng để lưu
+//}
+router.put('/password', (req, res, next) => {
+    let body = req.body
+    admin.getOne({
+        where: {
+            [Op.and]: [
+                { id: body.id },
+                { isDeleted: false }
+            ]
+        }
+    }).then(data => {
+        if (data) {
+            bcrypt.compare(body.check, data.password, (err, result) => {
+                if (result) {
+                    bcrypt.hash(body.password, saltRounds, (err, hash) => {
+                        body.password = hash
+                        admin.updateData(body, { where: { id: body.id } })
+                            .then(result => {
+                                if (result) {
+                                    res.json({
+                                        success: true,
+                                        message: null
+                                    })
+                                } else {
+                                    res.status(404).json({
+                                        success: false,
+                                        message: `Update unsuccessful in adminID ${body.id}`
+                                    })
+                                }
+                            })
+                            .catch(error => next(error))
+                    })
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        message: "Incorrect password"
+                    })
+                }
+            })
+        } else {
+            res.status(404).json({
+                success: false,
+                message: `Not found id ${body.id}`
+            })
+        }
+    }).catch(error => next(error))
+})
+////////////////////
+
 //////////Get All Status
 router.get('/status', (req, res, next) => {
     status.getAll({
@@ -52,6 +107,93 @@ router.get('/category', (req, res, next) => {
                 success: true,
                 message: null,
                 data: data
+            })
+        })
+        .catch(error => next(error))
+})
+////////////////////
+
+//////////Get All Promotion (Statistic)
+router.get('/promotion/statistic', (req, res, next) => {
+    promotion.getAll({
+        attributes: ['id', 'title', 'description', 'start', 'end'],
+        include: [
+            {
+                attributes: ['quantity', 'balanceQty'],
+                model: models.Detail,
+                include: [{
+                    attributes: ['id', 'title', 'description', 'value'],
+                    model: models.Voucher
+                }]
+            },
+            {
+                attributes: ['state'],
+                model: models.Status
+            },
+            {
+                attributes: ['id', 'title'],
+                model: models.Game,
+            },
+            {
+                attributes: ['id', 'name'],
+                model: models.Partner,
+                include: [
+                    {
+                        attributes: ['type'],
+                        model: models.Category,
+                    },
+                    {
+                        attributes: ['name', 'address', 'lat', 'long'],
+                        model: models.Store
+                    }
+                ]
+            }
+        ],
+        where: { isDeleted: false },
+        order: [['id', 'ASC']]
+    })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                parent.Details.forEach(child => {
+                    let voucher = child.dataValues.Voucher
+                    child.dataValues.Voucher = voucher.dataValues
+                    arr.push(child.dataValues)
+                })
+                parent.Details = arr
+                arr = []
+            })
+            return promotions
+        })
+        .then(promotions => {
+            promotions.forEach(parent => {
+                let status = parent.Status.dataValues.state
+                let game = parent.Game.dataValues
+                parent.Status = status
+                parent.Game = game
+            })
+            return promotions
+        })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                let partner = parent.Partner.dataValues
+                let category = partner.Category.dataValues.type
+                parent.Partner = partner
+                parent.Partner.Category = category
+                parent.Partner.Stores.forEach(child => {
+                    arr.push(child.dataValues)
+                })
+                parent.Partner.Stores = arr
+                arr = []
+            })
+            return promotions
+        })
+        .then(promotions => {
+            res.json({
+                success: true,
+                message: null,
+                data: promotions
             })
         })
         .catch(error => next(error))
