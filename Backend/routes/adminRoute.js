@@ -361,9 +361,17 @@ router.get('/account', (req, res, next) => {
                 .catch(error => next(error))
         } else if (query == "partner") {
             partner.getAll({
+                include: [{model: models.Category}],
                 where: { isDeleted: false },
                 order: [['id', 'ASC']]
             })
+                .then(partners => {
+                    partners.forEach(parent => {
+                        let category = parent.Category.dataValues
+                        parent.Category = category
+                    })
+                    return partners
+                })
                 .then(data => {
                     res.json({
                         success: true,
