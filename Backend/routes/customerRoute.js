@@ -197,7 +197,7 @@ router.get('/promotion', (req, res, next) => {
                 where: { state: 'Accepted' }
             },
             {
-                attributes: ['id', 'title'],
+                attributes: ['id', 'title', 'path'],
                 model: models.Game,
             },
             {
@@ -303,7 +303,7 @@ router.get('/promotion/:id', (req, res, next) => {
                     model: models.Status,
                 },
                 {
-                    attributes: ['id', 'title'],
+                    attributes: ['id', 'title', 'path'],
                     model: models.Game,
                 }
             ],
@@ -392,7 +392,7 @@ router.get('/nearby', (req, res, next) => {
                     where: { state: 'Accepted' }
                 },
                 {
-                    attributes: ['id', 'title'],
+                    attributes: ['id', 'title', 'path'],
                     model: models.Game,
                 },
                 {

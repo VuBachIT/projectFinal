@@ -131,7 +131,7 @@ router.get('/promotion/statistic', (req, res, next) => {
                 model: models.Status
             },
             {
-                attributes: ['id', 'title'],
+                attributes: ['id', 'title', 'path'],
                 model: models.Game,
             },
             {
@@ -218,7 +218,7 @@ router.get('/promotion', (req, res, next) => {
                 model: models.Status
             },
             {
-                attributes: ['id', 'title'],
+                attributes: ['id', 'title', 'path'],
                 model: models.Game,
             },
             {
@@ -284,6 +284,111 @@ router.get('/promotion', (req, res, next) => {
             })
         })
         .catch(error => next(error))
+})
+////////////////////
+
+//////////Get One Promotion By PromotionID
+//sử dụng localhost:3000/admin/promotion/:id trong :id là id của promotion
+//ví dụ localhost:3000/admin/promotion/1
+router.get('/promotion/:id', (req, res, next) => {
+    if (!isNaN(req.params.id)) {
+        let param = parseInt(req.params.id)
+        promotion.getOne({
+            attributes: ['id', 'title', 'description', 'start', 'end'],
+            include: [
+                {
+                    attributes: ['quantity', 'balanceQty'],
+                    model: models.Detail,
+                    include: [{
+                        attributes: ['id', 'title', 'description', 'value'],
+                        model: models.Voucher
+                    }]
+                },
+                {
+                    attributes: ['state'],
+                    model: models.Status,
+                },
+                {
+                    attributes: ['id', 'title', 'path'],
+                    model: models.Game,
+                },
+                {
+                    attributes: ['id', 'name'],
+                    model: models.Partner,
+                    include: [
+                        {
+                            attributes: ['type'],
+                            model: models.Category,
+                        },
+                        {
+                            attributes: ['name', 'address', 'lat', 'long'],
+                            model: models.Store
+                        }
+                    ]
+                }
+            ],
+            where: {
+                [Op.and]: [
+                    { id: param },
+                    { isDeleted: false }
+                ]
+            }
+        })
+            .then(data => {
+                if (data) {
+                    let arr = []
+                    data.Details.forEach(element => {
+                        let voucher = element.dataValues.Voucher
+                        element.dataValues.Voucher = voucher.dataValues
+                        arr.push(element.dataValues)
+                    })
+                    data.Details = arr
+                }
+                return data
+            })
+            .then(data => {
+                if (data) {
+                    let status = data.Status.dataValues.state
+                    let game = data.Game.dataValues
+                    let category = data.Category.dataValues
+                    data.Category = category
+                    data.Status = status
+                    data.Game = game
+                }
+                return data
+            })
+            .then(data => {
+                if (data) {
+                    let arr = []
+                    data.Stores.forEach(element => {
+                        let store = element.dataValues
+                        arr.push(store)
+                    })
+                    data.Store = arr
+                }
+                return data
+            })
+            .then(data => {
+                if (data) {
+                    res.json({
+                        success: true,
+                        message: null,
+                        data: data
+                    })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: `Not found id ${param}`
+                    })
+                }
+            })
+            .catch(error => next(error))
+    } else {
+        res.status(406).json({
+            success: false,
+            message: 'Incorrect method'
+        })
+    }
 })
 ////////////////////
 
@@ -361,7 +466,7 @@ router.get('/account', (req, res, next) => {
                 .catch(error => next(error))
         } else if (query == "partner") {
             partner.getAll({
-                include: [{model: models.Category}],
+                include: [{ model: models.Category }],
                 where: { isDeleted: false },
                 order: [['id', 'ASC']]
             })
