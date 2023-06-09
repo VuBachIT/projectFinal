@@ -30,7 +30,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/customer/reward?id=
+GET http://localhost:3000/partner/statistic?id=1
 
 ###
 

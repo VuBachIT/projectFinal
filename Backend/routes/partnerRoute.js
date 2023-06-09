@@ -703,7 +703,7 @@ router.put('/use', (req, res, next) => {
 ////////////////////
 
 //////////Get All Promotion By PartnerID
-//sử dụng localhost:3000/partner/promotion?id=... trong đó id là partnerID
+//sử dụng localhost:3000/partner/statistic?id=... trong đó id là partnerID
 router.get('/statistic', (req, res, next) => {
     if (req.query.id) {
         let query = req.query.id

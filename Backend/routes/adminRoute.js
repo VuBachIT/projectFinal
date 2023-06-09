@@ -147,6 +147,9 @@ router.get('/promotion/statistic', (req, res, next) => {
                         model: models.Store
                     }
                 ]
+            },
+            {
+                model: models.Participation
             }
         ],
         where: { isDeleted: false },
@@ -169,8 +172,10 @@ router.get('/promotion/statistic', (req, res, next) => {
             promotions.forEach(parent => {
                 let status = parent.Status.dataValues.state
                 let game = parent.Game.dataValues
+                let participations = parent.Participations.length
                 parent.Status = status
                 parent.Game = game
+                parent.Participations = participations
             })
             return promotions
         })
