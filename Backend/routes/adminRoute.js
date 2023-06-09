@@ -365,7 +365,7 @@ router.get('/promotion/:id', (req, res, next) => {
                         let store = element.dataValues
                         arr.push(store)
                     })
-                    data.Store = arr
+                    data.Partner.Stores = arr
                 }
                 return data
             })
