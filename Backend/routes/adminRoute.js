@@ -367,6 +367,7 @@ router.get('/promotion/:id', (req, res, next) => {
                     })
                     data.Partner.Stores = arr
                 }
+                console.log('Test')
                 return data
             })
             .then(data => {
