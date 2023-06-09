@@ -352,7 +352,7 @@ router.get('/promotion/:id', (req, res, next) => {
                     let game = data.Game.dataValues
                     let partner = data.Partner.dataValues
                     let category = partner.Category.dataValues
-                    data.Category = category
+                    data.Partner.Category = category
                     data.Status = status
                     data.Game = game
                 }
@@ -361,7 +361,7 @@ router.get('/promotion/:id', (req, res, next) => {
             .then(data => {
                 if (data) {
                     let arr = []
-                    data.Stores.forEach(element => {
+                    data.Partner.Stores.forEach(element => {
                         let store = element.dataValues
                         arr.push(store)
                     })
