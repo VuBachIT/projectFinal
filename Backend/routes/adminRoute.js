@@ -350,7 +350,8 @@ router.get('/promotion/:id', (req, res, next) => {
                 if (data) {
                     let status = data.Status.dataValues.state
                     let game = data.Game.dataValues
-                    let category = data.Category.dataValues
+                    let partner = data.Partner.dataValues
+                    let category = partner.Category.dataValues
                     data.Category = category
                     data.Status = status
                     data.Game = game
