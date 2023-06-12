@@ -530,7 +530,7 @@ router.get('/reward', (req, res, next) => {
         reward.getAll({
             include: [
                 {
-                    attributes: ['id', 'title', 'description', 'value','code'],
+                    attributes: ['id', 'title', 'description', 'value'],
                     model: models.Voucher
                 }
             ],
@@ -636,7 +636,7 @@ router.post('/reward', (req, res, next) => {
                             .catch(error => next(error))
                     })
                     .catch(error => next(error))
-            }else{
+            } else {
                 res.status(405).json({
                     success: false,
                     message: `Over reward`

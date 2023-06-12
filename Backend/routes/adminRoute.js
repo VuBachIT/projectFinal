@@ -206,7 +206,10 @@ router.get('/promotion/statistic', (req, res, next) => {
 ////////////////////
 
 //////////Get All Promotion
+//sử dụng localhost:3000/partner/promotion?from=...&to=... trong đó from và to là khoảng thời gian tìm kiếm
 router.get('/promotion', (req, res, next) => {
+    let from = (req.query.from) ? { start: { [Op.gte]: req.query.from } } : {}
+    let to = (req.query.to) ? { start: { [Op.lte]: req.query.to } } : {}
     promotion.getAll({
         attributes: ['id', 'title', 'description', 'start', 'end'],
         include: [
@@ -241,7 +244,13 @@ router.get('/promotion', (req, res, next) => {
                 ]
             }
         ],
-        where: { isDeleted: false },
+        where: {
+            [Op.and]: [
+                from,
+                to,
+                { isDeleted: false }
+            ]
+        },
         order: [['id', 'ASC']]
     })
         .then(promotions => {

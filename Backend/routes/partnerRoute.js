@@ -203,13 +203,17 @@ router.get('/game', (req, res, next) => {
 ////////////////////
 
 //////////Get All Promotion By PartnerID
-//sử dụng localhost:3000/partner/promotion?id=...&search=...&type=... trong đó id là partnerID, search là từ khóa tìm kiếm, type là loại Partner
+//sử dụng localhost:3000/partner/promotion?id=...&search=...&type=...&from=...&to=... 
+//trong đó id là partnerID, search là từ khóa tìm kiếm, type là loại Partner
+//from và to là khoảng thời gian tìm kiếm
 //search và type trong URL là mục đích dùng tìm kiếm và lọc
 router.get('/promotion', (req, res, next) => {
     if (req.query.id) {
         let query = req.query.id
         let search = (req.query.search) ? { title: { [Op.iLike]: `%${req.query.search}%` } } : {}
         let type = (req.query.type) ? { type: req.query.type } : {}
+        let from = (req.query.from) ? { start: { [Op.gte]: req.query.from } } : {}
+        let to = (req.query.to) ? { start: { [Op.lte]: req.query.to } } : {}
         promotion.getAll({
             attributes: ['id', 'title', 'description', 'start', 'end'],
             include: [
@@ -240,6 +244,8 @@ router.get('/promotion', (req, res, next) => {
             ],
             where: {
                 [Op.and]: [
+                    from,
+                    to,
                     { partnerID: query },
                     { isDeleted: false },
                     search
