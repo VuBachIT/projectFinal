@@ -674,11 +674,11 @@ router.delete('/store', (req, res, next) => {
 ////////////////////
 
 //////////Update Reward When Customer Uses Reward In Store (isUsed)
-//sử dụng localhost:3000/partner/use?id=../ trong id là rewardID
+//sử dụng localhost:3000/partner/use?code=../ trong code là code của reward sẽ sử dụng
 router.put('/use', (req, res, next) => {
-    if (req.query.id) {
-        let query = req.query.id
-        reward.updateData({ isUsed: true }, { where: { id: query } })
+    if (req.query.code) {
+        let query = req.query.code
+        reward.updateData({ isUsed: true }, { where: { code: query } })
             .then(result => {
                 if (result) {
                     res.json({
@@ -688,7 +688,7 @@ router.put('/use', (req, res, next) => {
                 } else {
                     res.status(400).json({
                         success: false,
-                        message: `Update unsuccessful in rewardID ${query}`
+                        message: `Update unsuccessful in reward with ${query}`
                     })
                 }
             })

@@ -17,7 +17,8 @@ let participation = new Participation()
 let customer = new Customer()
 let reward = new Reward()
 let detail = new Detail()
-let voucher = new Voucher
+let voucher = new Voucher()
+let randomString = require('../controllers/helper')
 
 //////////Test Route
 router.get('/', (req, res, next) => {
@@ -529,7 +530,7 @@ router.get('/reward', (req, res, next) => {
         reward.getAll({
             include: [
                 {
-                    attributes: ['id', 'title', 'description', 'value'],
+                    attributes: ['id', 'title', 'description', 'value','code'],
                     model: models.Voucher
                 }
             ],
@@ -579,6 +580,7 @@ router.post('/reward', (req, res, next) => {
     let expDate = new Date(date.setMonth(date.getMonth() + 1));
     body.expDate = expDate
     body.isUsed = false
+    body.code = randomString(10)
     body.createdAt = Sequelize.literal('NOW()')
     body.updatedAt = Sequelize.literal('NOW()')
     reward.countData({

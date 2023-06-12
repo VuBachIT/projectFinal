@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Reward.init({
     expDate: DataTypes.DATEONLY,
-    isUsed: DataTypes.BOOLEAN
+    isUsed: DataTypes.BOOLEAN,
+    code: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Reward',
