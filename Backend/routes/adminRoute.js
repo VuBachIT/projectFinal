@@ -150,6 +150,10 @@ router.get('/promotion/statistic', (req, res, next) => {
             },
             {
                 model: models.Participation
+            },
+            {
+                attributes: ['id', 'expDate', 'isUsed'],
+                model: models.Reward,
             }
         ],
         where: { isDeleted: false },
@@ -190,6 +194,17 @@ router.get('/promotion/statistic', (req, res, next) => {
                     arr.push(child.dataValues)
                 })
                 parent.Partner.Stores = arr
+                arr = []
+            })
+            return promotions
+        })
+        .then(promotions => {
+            let arr = []
+            promotions.forEach(parent => {
+                parent.Rewards.forEach(child => {
+                    arr.push(child.dataValues)
+                })
+                parent.Rewards = arr
                 arr = []
             })
             return promotions
