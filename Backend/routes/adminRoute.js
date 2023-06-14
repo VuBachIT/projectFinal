@@ -152,7 +152,7 @@ router.get('/promotion/statistic', (req, res, next) => {
                 model: models.Participation
             },
             {
-                attributes: ['id', 'expDate', 'isUsed'],
+                attributes: ['id', 'expDate', 'isUsed', 'voucherID'],
                 model: models.Reward,
             }
         ],
