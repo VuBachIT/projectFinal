@@ -544,7 +544,13 @@ router.get('/reward', (req, res, next) => {
                     model: models.Voucher
                 },
                 {
-                    model : models.Partner
+                    model: models.Partner,
+                    include: [
+                        {
+                            model: models.Store,
+                            where: { isDeleted: false }
+                        }
+                    ]
                 }
             ],
             where: {
@@ -559,9 +565,20 @@ router.get('/reward', (req, res, next) => {
             .then(rewards => {
                 rewards.forEach(parent => {
                     let voucher = parent.Voucher.dataValues
-                    let partner = parent.Partner.dataValues
                     parent.Voucher = voucher
+                })
+                return rewards
+            })
+            .then(rewards => {
+                let arr = []
+                rewards.forEach(parent => {
+                    let partner = parent.Partner.dataValues
                     parent.Partner = partner
+                    parent.Partner.Stores.forEach(child => {
+                        arr.push(child.dataValues)
+                    })
+                    parent.Partner.Stores = arr
+                    arr = []
                 })
                 return rewards
             })
@@ -668,6 +685,8 @@ router.post('/reward', (req, res, next) => {
 //==>{
 // email : "test@gmail.com" //string
 // rewardID : 1 //int
+// sender : "sender@gmail.com" // string
+// code : "ABC123" // string
 //}
 router.put('/reward', (req, res, next) => {
     let body = req.body
@@ -693,8 +712,9 @@ router.put('/reward', (req, res, next) => {
                                 from: 'noreply.voucher.app@gmail.com',
                                 to: body.email,
                                 subject: 'Thông báo từ app',
-                                text: 'Bạn có tin nhắn từ ' + body.email,
-                                html: '<p>You have Voucher:' + req.body.message
+                                text: 'Bạn có tin nhắn từ ' + body.sender,
+                                html: `<p>Bạn nhận được quà từ ${body.sender}</p><br>
+                                    <p>Mã code : ${body.code}. Mở app để kiểm tra ngay</p>`
                             }, (err, info) => {
                                 if (err) {
                                     console.log(err);
