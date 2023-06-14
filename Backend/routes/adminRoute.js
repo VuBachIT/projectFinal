@@ -154,6 +154,10 @@ router.get('/promotion/statistic', (req, res, next) => {
             {
                 attributes: ['id', 'expDate', 'isUsed', 'voucherID'],
                 model: models.Reward,
+                include: [{
+                    attributes: ['title'],
+                    model: models.Voucher
+                }]
             }
         ],
         where: { isDeleted: false },
@@ -202,6 +206,8 @@ router.get('/promotion/statistic', (req, res, next) => {
             let arr = []
             promotions.forEach(parent => {
                 parent.Rewards.forEach(child => {
+                    let title = child.dataValues.Voucher.dataValues.title
+                    child.dataValues.Voucher = title
                     arr.push(child.dataValues)
                 })
                 parent.Rewards = arr
