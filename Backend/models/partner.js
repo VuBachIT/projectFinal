@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Partner.hasMany(models.Promotion, { foreignKey: 'partnerID' })
       Partner.hasMany(models.Store, { foreignKey: 'partnerID' })
+      Partner.hasMany(models.Reward, { foreignKey: 'partnerID' })
       Partner.belongsTo(models.Category, { foreignKey: 'categoryID' })
     }
   }

@@ -2,6 +2,8 @@ let express = require('express')
 let router = express.Router()
 let Sequelize = require('sequelize')
 let bcrypt = require('bcrypt')
+let nodemailer = require('nodemailer')
+let smtpTransport = require('nodemailer-smtp-transport');
 let Op = Sequelize.Op
 let models = require('../models')
 let Promotion = require('../controllers/promotionClass')
@@ -19,6 +21,14 @@ let reward = new Reward()
 let detail = new Detail()
 let voucher = new Voucher()
 let randomString = require('../controllers/helper')
+var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+    service: 'gmail',
+    host: 'smtp.gmail.com',
+    auth: {
+        user: 'noreply.voucher.app@gmail.com',
+        pass: 'yrumnnnjuiwazlwe'
+    }
+}));
 
 //////////Test Route
 router.get('/', (req, res, next) => {
@@ -289,7 +299,7 @@ router.get('/promotion/:id', (req, res, next) => {
     if (!isNaN(req.params.id)) {
         let param = parseInt(req.params.id)
         promotion.getOne({
-            attributes: ['id', 'title', 'description', 'start', 'end'],
+            attributes: ['id', 'title', 'description', 'start', 'end', 'partnerID'],
             include: [
                 {
                     attributes: ['quantity', 'balanceQty'],
@@ -532,6 +542,9 @@ router.get('/reward', (req, res, next) => {
                 {
                     attributes: ['id', 'title', 'description', 'value'],
                     model: models.Voucher
+                },
+                {
+                    model : models.Partner
                 }
             ],
             where: {
@@ -546,7 +559,9 @@ router.get('/reward', (req, res, next) => {
             .then(rewards => {
                 rewards.forEach(parent => {
                     let voucher = parent.Voucher.dataValues
+                    let partner = parent.Partner.dataValues
                     parent.Voucher = voucher
+                    parent.Partner = partner
                 })
                 return rewards
             })
@@ -573,6 +588,7 @@ router.get('/reward', (req, res, next) => {
 // customerID : 1 //int
 // promotionID : 1, //int
 // voucherID : 1 //int
+// partnerID : 1 //int
 //}
 router.post('/reward', (req, res, next) => {
     let body = req.body
@@ -590,7 +606,6 @@ router.post('/reward', (req, res, next) => {
         }
     })
         .then(count => {
-            console.log(count)
             if (count < 5) {
                 reward.insertData(body)
                     .then(result => {
@@ -649,7 +664,7 @@ router.post('/reward', (req, res, next) => {
 /////////////////////
 
 //////////Update Reward (Gift The Voucher)
-//Dùng để cập nhật data của customer khi nhận tặng voucher cho customer khác :
+//Dùng để cập nhật data của customer khi tặng voucher cho customer khác :
 //==>{
 // email : "test@gmail.com" //string
 // rewardID : 1 //int
@@ -674,10 +689,22 @@ router.put('/reward', (req, res, next) => {
                 reward.updateData({ customerID: data.id }, { where: { id: body.rewardID } })
                     .then(result => {
                         if (result) {
-                            res.json({
-                                success: true,
-                                message: null
-                            })
+                            transporter.sendMail({
+                                from: 'noreply.voucher.app@gmail.com',
+                                to: body.email,
+                                subject: 'Thông báo từ app',
+                                text: 'Bạn có tin nhắn từ ' + body.email,
+                                html: '<p>You have Voucher:' + req.body.message
+                            }, (err, info) => {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    res.json({
+                                        success: true,
+                                        message: null
+                                    })
+                                }
+                            });
                         } else {
                             res.status(400).json({
                                 success: false,

@@ -5,9 +5,10 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Reward extends Model {
     static associate(models) {
-        Reward.belongsTo(models.Customer,{foreignKey : 'customerID'})
-        Reward.belongsTo(models.Voucher,{foreignKey : 'voucherID'})
-        Reward.belongsTo(models.Promotion,{foreignKey : 'promotionID'})
+      Reward.belongsTo(models.Customer, { foreignKey: 'customerID' })
+      Reward.belongsTo(models.Voucher, { foreignKey: 'voucherID' })
+      Reward.belongsTo(models.Promotion, { foreignKey: 'promotionID' })
+      Reward.belongsTo(models.Partner, { foreignKey: 'partnerID' })
     }
   }
   Reward.init({

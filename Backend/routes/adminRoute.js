@@ -221,7 +221,7 @@ router.get('/promotion/statistic', (req, res, next) => {
 ////////////////////
 
 //////////Get All Promotion
-//sử dụng localhost:3000/partner/promotion?from=...&to=... trong đó from và to là khoảng thời gian tìm kiếm
+//sử dụng localhost:3000/admin/promotion?from=...&to=... trong đó from và to là khoảng thời gian tìm kiếm
 router.get('/promotion', (req, res, next) => {
     let from = (req.query.from) ? { start: { [Op.gte]: req.query.from } } : {}
     let to = (req.query.to) ? { start: { [Op.lte]: req.query.to } } : {}
@@ -478,13 +478,23 @@ router.delete('/promotion', (req, res, next) => {
 ////////////////////
 
 //////////Get All Account (Customer, Admin, Partner)
-//sử dụng localhost:3000/admin/account?type=... trong đó type là loại user (customer, admin, partner ==> viết thường không hoa)
+//sử dụng localhost:3000/admin/account?type=...&from=...&to=... 
+//trong đó type là loại user (customer, admin, partner ==> viết thường không hoa)
+//from và to dùng để search khoảng thời gian, nếu không dùng thì không thêm vào
 router.get('/account', (req, res, next) => {
     if (req.query.type) {
         let query = req.query.type
+        let from = (req.query.from) ? { createdAt: { [Op.gte]: new Date(req.query.from) } } : {}
+        let to = (req.query.to) ? { createdAt: { [Op.lte]: new Date(req.query.to) } } : {}
         if (query == "customer") {
             customer.getAll({
-                where: { isDeleted: false },
+                where: {
+                    [Op.and]: [
+                        from,
+                        to,
+                        { isDeleted: false }
+                    ]
+                },
                 order: [['id', 'ASC']]
             })
                 .then(data => {
@@ -498,7 +508,13 @@ router.get('/account', (req, res, next) => {
         } else if (query == "partner") {
             partner.getAll({
                 include: [{ model: models.Category }],
-                where: { isDeleted: false },
+                where: {
+                    [Op.and]: [
+                        from,
+                        to,
+                        { isDeleted: false }
+                    ]
+                },
                 order: [['id', 'ASC']]
             })
                 .then(partners => {
