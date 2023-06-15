@@ -14,10 +14,10 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "postgres",
-    "password": "0838984298",
-    "database": "AppDB",
-    "host": "localhost",
+    "username": "ajeymvuq",
+    "password": "lKT-mvBGeAtoZibRgrRbgrzg8VRMIcxc",
+    "database": "ajeymvuq",
+    "host": "tiny.db.elephantsql.com",
     "dialect": "postgres",
     "dialectOptions": {
       "ssl": {
