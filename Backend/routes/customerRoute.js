@@ -708,13 +708,24 @@ router.put('/reward', (req, res, next) => {
                 reward.updateData({ customerID: data.id }, { where: { id: body.rewardID } })
                     .then(result => {
                         if (result) {
+                            let stores = ''
+                            body.stores.forEach(element => {
+                                stores += element.address + '\n'
+                            })
                             transporter.sendMail({
                                 from: 'noreply.voucher.app@gmail.com',
                                 to: body.email,
-                                subject: 'Thông báo từ app',
-                                text: 'Bạn có tin nhắn từ ' + body.sender,
-                                html: `<p>Bạn nhận được quà từ ${body.sender}</p><br>
-                                    <p>Mã code : ${body.code}. Mở app để kiểm tra ngay</p>`
+                                subject: 'Thông báo từ Voucher App',
+                                text: `Gửi Quý Khách Hàng, \n\n
+                                Bạn nhận được một voucher từ bạn bè với chi tiết sau : \n
+                                Người tặng : ${body.sender} \n
+                                Mã voucher : ${body.code} \n
+                                Ngày hết hạn : ${body.expDate} \n
+                                Nhãn hàng : ${body.partnerName} \n
+                                Cửa hàng áp dụng : \n
+                                ${stores} \n\n
+                                Voucher đã vào trong ví của bạn. Vui lòng đăng nhập ứng dụng để kiểm tra và sử dụng
+                                ` 
                             }, (err, info) => {
                                 if (err) {
                                     console.log(err);
