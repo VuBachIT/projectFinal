@@ -11,17 +11,14 @@ let saltRounds = 10
 
 router.get('/game', (req, res) => {
     let data = [{
-        title: 'Game A',
+        title: 'Game Pokemon',
+        path: 'gamepokemon',
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
-        title: 'Game B',
-        isDeleted: false,
-        createdAt: Sequelize.literal('NOW()'),
-        updatedAt: Sequelize.literal('NOW()')
-    }, {
-        title: 'Game C',
+        title: 'Game 2048',
+        path: 'game2048',
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
@@ -32,17 +29,17 @@ router.get('/game', (req, res) => {
 router.get('/status', (req, res) => {
     let data = [{
         state: 'Pending',
-        description: 'Test',
+        description: 'Tình trạng xét duyệt',
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
         state: 'Accepted',
-        description: 'Test',
+        description: 'Tình trạng chấp thuận',
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
         state: 'Rejected',
-        description: 'Test',
+        description: 'Tình trạng từ chối',
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
@@ -51,23 +48,44 @@ router.get('/status', (req, res) => {
 
 router.get('/voucher', (req, res) => {
     let data = [{
-        title: 'Voucher A',
-        description: 'Test',
+        title: 'Giảm 50% đơn hàng',
+        description: 'Tổng hóa đơn được giảm 50%',
         value: 0.5,
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
-        title: 'Voucher B',
-        description: 'Test',
-        value: 0.5,
+        title: 'Giảm 30% cho đơn hàng từ 100.000 trở lên',
+        description: 'Tổng hóa đơn được giảm 30% nếu giá trị trên 100.000',
+        value: 0.3,
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
-        title: 'Voucher C',
-        description: 'Test',
-        value: 0.5,
+        title: 'Giảm 20% kèm theo khuyến mãi',
+        description: 'Tổng hóa đơn được giảm 20% kèm khuyến mãi tại cửa hàng',
+        value: 0.2,
+        isDeleted: false,
+        createdAt: Sequelize.literal('NOW()'),
+        updatedAt: Sequelize.literal('NOW()')
+    }, {
+        title: 'Giảm 70% bằng thẻ VISA',
+        description: 'Tổng hóa đơn được giảm 70% khi thanh toán bằng thẻ VISA',
+        value: 0.7,
+        isDeleted: false,
+        createdAt: Sequelize.literal('NOW()'),
+        updatedAt: Sequelize.literal('NOW()')
+    }, {
+        title: 'Giảm 60% bằng ví điện tử MOMO',
+        description: 'Tổng hóa đơn được giảm 60% khi sử dụng ví MOMO',
+        value: 0.6,
+        isDeleted: false,
+        createdAt: Sequelize.literal('NOW()'),
+        updatedAt: Sequelize.literal('NOW()')
+    }, {
+        title: 'Giảm 15% trên phí vận chuyển',
+        description: 'Tổng hóa đơn được giảm 15% trên phí vận chuyển',
+        value: 0.15,
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
@@ -77,15 +95,15 @@ router.get('/voucher', (req, res) => {
 
 router.get('/category', (req, res) => {
     let data = [{
-        type: 'Category A',
+        type: 'Đồ Ăn',
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
-        type: 'Category B',
+        type: 'Thức Uống',
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }, {
-        type: 'Category C',
+        type: 'Giải Trí',
         createdAt: Sequelize.literal('NOW()'),
         updatedAt: Sequelize.literal('NOW()')
     }]
@@ -94,7 +112,7 @@ router.get('/category', (req, res) => {
 
 router.get('/admin', (req, res) => {
     let data = [{
-        email: 'admin@gmail.com',
+        email: 'bachthunhat@gmail.com',
         password: '123',
         isDeleted: false,
         createdAt: Sequelize.literal('NOW()'),
@@ -106,47 +124,35 @@ router.get('/admin', (req, res) => {
     })
 })
 
-router.get('/customer', (req, res) => {
-    let data = [{
-        email: 'customer@gmail.com',
-        password: '123',
-        phoneNumber: '123',
-        address: 'Test',
-        name: 'Test',
-        isDeleted: false,
-        createdAt: Sequelize.literal('NOW()'),
-        updatedAt: Sequelize.literal('NOW()')
-    }]
-    models.Customer.bulkCreate(data).then(res.send("Customer Create"))
-})
+// router.get('/customer', (req, res) => {
+//     let data = [{
+//         email: 'customer@gmail.com',
+//         password: '123',
+//         phoneNumber: '123',
+//         address: 'Test',
+//         name: 'Test',
+//         isDeleted: false,
+//         createdAt: Sequelize.literal('NOW()'),
+//         updatedAt: Sequelize.literal('NOW()')
+//     }]
+//     models.Customer.bulkCreate(data).then(res.send("Customer Create"))
+// })
 
-router.get('/partner', (req, res) => {
-    let data = [{
-        email: 'partner1@gmail.com',
-        password: '123',
-        address: 'Test',
-        name: 'Test',
-        isDeleted: false,
-        createdAt: Sequelize.literal('NOW()'),
-        updatedAt: Sequelize.literal('NOW()')
-    }, {
-        email: 'partner2@gmail.com',
-        password: '123',
-        address: 'Test',
-        name: 'Test',
-        isDeleted: false,
-        createdAt: Sequelize.literal('NOW()'),
-        updatedAt: Sequelize.literal('NOW()')
-    }, {
-        email: 'partner3@gmail.com',
-        password: '123',
-        address: 'Test',
-        name: 'Test',
-        isDeleted: false,
-        createdAt: Sequelize.literal('NOW()'),
-        updatedAt: Sequelize.literal('NOW()')
-    }]
-    models.Partner.bulkCreate(data).then(res.send("Partner Create"))
-})
+// router.get('/partner', (req, res) => {
+//     let data = [{
+//         email: 'partner1@gmail.com',
+//         password: '123',
+//         address: 'Test',
+//         name: 'Test',
+//         isDeleted: false,
+//         categoryID: 1,
+//         createdAt: Sequelize.literal('NOW()'),
+//         updatedAt: Sequelize.literal('NOW()')
+//     }]
+//     bcrypt.hash(data[0].password, saltRounds, (err, hash) => {
+//         data[0].password = hash
+//         models.Partner.bulkCreate(data).then(res.send("Partner Create"))
+//     })
+// })
 
 module.exports = router

@@ -710,20 +710,20 @@ router.put('/reward', (req, res, next) => {
                         if (result) {
                             let stores = ''
                             body.stores.forEach(element => {
-                                stores += element.address + '\n'
+                                stores += `- ${element.address}\n`
                             })
                             transporter.sendMail({
                                 from: 'noreply.voucher.app@gmail.com',
                                 to: body.email,
                                 subject: 'Thông báo từ Voucher App',
-                                text: `Gửi Quý Khách Hàng, \n\n
+                                text: `
+                                Gửi Quý Khách Hàng, \n\n
                                 Bạn nhận được một voucher từ bạn bè với chi tiết sau : \n
                                 Người tặng : ${body.sender} \n
                                 Mã voucher : ${body.code} \n
                                 Ngày hết hạn : ${body.expDate} \n
                                 Nhãn hàng : ${body.partnerName} \n
-                                Cửa hàng áp dụng : \n
-                                ${stores} \n\n
+                                Cửa hàng áp dụng : \n ${stores} \n
                                 Voucher đã vào trong ví của bạn. Vui lòng đăng nhập ứng dụng để kiểm tra và sử dụng
                                 ` 
                             }, (err, info) => {

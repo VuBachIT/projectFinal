@@ -30,7 +30,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/admin/account?type=customer
+GET http://localhost:3000/admin/account?type=admin
 
 ###
 
